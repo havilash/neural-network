@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: Neural-Network
+Version: 0.0.0
+Summary: own Neural Network
+Home-page: https://github.com/Havilash/Neural-Network/
+Author: Gregory Reiter, Havilash Sivaratnam
+License: UNKNOWN
+Platform: any
+Classifier: Programming Language :: Python
+Provides-Extra: testing
+
+UNKNOWN
+
