@@ -34,7 +34,7 @@ class ReLU(Activation):
             return 0
 
 
-class HyperbolicTangent(Activation):
+class TanH(Activation):
     @staticmethod
     def func(x):
         num = math.exp(2 * x)
@@ -42,7 +42,7 @@ class HyperbolicTangent(Activation):
 
     @staticmethod
     def derivative(x):
-        return 1 - HyperbolicTangent.func(x) ** 2
+        return 1 - TanH.func(x) ** 2
 
 
 class SiLU(Activation):
@@ -56,3 +56,24 @@ class SiLU(Activation):
         denominator = (1 + e_x) ** 2
         numerator = e_x * (x + 1) + x
         return numerator / denominator
+    
+    
+class Identity(Activation):
+    @staticmethod
+    def func(x):
+        return x
+
+    @staticmethod
+    def derivative(x):
+        return 1
+    
+
+class Softmax(Activation):
+    @staticmethod
+    def func(x):
+        return math.exp(x) / (1 + math.exp(x))
+
+    @staticmethod
+    def derivative(x):
+        p = Softmax.func(x)
+        return p * (1 - p)
