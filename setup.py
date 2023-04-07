@@ -46,6 +46,7 @@ setup(
         "pandas",
         "matplotlib",
         "jupyter",
+        "keras",
     ],
     cmdclass={"test": PyTest},
     description="own Neural Network",

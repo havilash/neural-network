@@ -11,7 +11,7 @@ def main():
     ])
     
     print(nn.calculate_outputs([-1, -2]))
-    for _ in range(2000):
+    for _ in range(100):
         nn.learn([-1, -2], [0, 1], .2)
         nn.learn([-2, -1], [1, 0], .2)
         nn.learn([-10, -2], [1, 0], .2)
