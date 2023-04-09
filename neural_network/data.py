@@ -11,14 +11,14 @@ def get_mnist_data():
 def get_augmented_mnist_data(n):
     x, y = get_mnist_data()
     datagen = ImageDataGenerator(
-        rotation_range=10,
+        rotation_range=25,
         zoom_range=0.1,
         width_shift_range=0.1,
         height_shift_range=0.1,
         shear_range=5,
         horizontal_flip=False,
         vertical_flip=False,
-        fill_mode='nearest'
+        fill_mode='nearest',
     )
     x = np.repeat(x, n, axis=0)
     y = np.repeat(y, n)
@@ -42,7 +42,24 @@ def create_batches(data, batch_size):
         yield data[i:i+batch_size]
 
 if __name__ == "__main__":
-    print(len(get_mnist_data()[0]))
-    print(len(get_augmented_mnist_data(2)[0]))
-    x_train, x_test, y_train, y_test = train_test_split(*get_augmented_mnist_data(2))
-    print(len(x_train))
+    from matplotlib import pyplot as plt
+    import random 
+
+    x, y = get_mnist_data()
+    x_augmented, y_augmented = get_augmented_mnist_data(6)
+
+    random_index = random.randint(0, len(x) - 1)
+    base_image = x[random_index]
+    augmented_images = x_augmented[random_index*6:(random_index+1)*6]
+
+    fig = plt.figure()
+    gs = fig.add_gridspec(3, 3)
+    ax1 = fig.add_subplot(gs[0, 1])
+    ax2 = [fig.add_subplot(gs[i // 3 + 1, i % 3]) for i in range(6)]
+
+    ax1.imshow(base_image.reshape(28, 28), cmap='gray')
+    ax1.set_title('Base Image')
+    for i in range(6):
+        ax2[i].imshow(augmented_images[i].reshape(28, 28), cmap='gray')
+        ax2[i].set_title(f'Augmented Image {i+1}')
+    plt.show()
