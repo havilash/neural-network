@@ -18,6 +18,7 @@ class NeuralNetwork:
             inputs = layer.calculate_outputs(inputs)
         return inputs
     
+    # Gradient Descent
     def cost(self, inputs, expected_outputs, node_cost: costs.Cost = costs.MeanSquaredError):
         outputs = self.calculate_outputs(inputs) 
         cost = 0
@@ -30,26 +31,32 @@ class NeuralNetwork:
         for layer in self.layers:
             layer.reset_gradients()
 
-
     def apply_gradients(self, learn_rate: float):
         for layer in self.layers:
             layer.apply_gradients(learn_rate)
 
-    def learn(self, inputs, expected_outputs, learn_rate: float, node_cost: costs.Cost = costs.MeanSquaredError):
-        H = 0.000001
-        original_cost = self.cost(inputs, expected_outputs, node_cost)
-        for layer in self.layers:
-            for inp in range(layer.num_input):                
-                for out in range(layer.num_output):
-                    layer.weights[inp][out] += H
-                    delta_cost = self.cost(inputs, expected_outputs, node_cost) - original_cost
-                    layer.weights[inp][out] -= H
-                    layer.gradient_weights[inp][out] = delta_cost / H
+    def update_gradients(self, inputs, expected_outputs, cost: costs.Cost):
+        self.calculate_outputs(inputs)
 
-            for out in range(layer.num_output):
-                layer.weights[inp][out] += H
-                delta_cost = self.cost(inputs, expected_outputs, node_cost) - original_cost
-                layer.weights[inp][out] -= H
-                layer.gradient_weights[inp][out] = delta_cost / H
+        output_layer = self.layers[-1]
+        node_values = output_layer.caculate_output_layer_node_values(expected_outputs, cost)
+        output_layer.update_gradients(node_values)
 
+        for i in range(len(self.layers) - 2, -1, -1):
+            hidden_layer = self.layers[i]
+            node_values = hidden_layer.caculate_hidden_layer_node_values(self.layers[i+1], node_values)
+            hidden_layer.update_gradients(node_values)
+
+    def learn(self, training_batch, learn_rate: float, cost: costs.Cost = costs.MeanSquaredError):
+        """
+        Update the gradients and apply them to the network based on a batch of training data.
+
+        :param training_batch: A list of tuples containing input and target output data. Each tuple represents a single training example with the first element being the input data (features) and the second element being the target output data (label). For example: [(x1, y1), (x2, y2), (x3, y3)] where x1, x2, x3 are the input data and y1, y2, y3 are the target output data.
+        :param learn_rate: The learning rate to use when applying the gradients.
+        :param cost: The cost function to use when calculating the error between the network's output and the target output.
+        """
+        
+        for data in training_batch:
+            self.update_gradients(data[0], data[1], cost)
         self.apply_gradients(learn_rate)
+        self.reset_gradients()

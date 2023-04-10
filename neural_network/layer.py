@@ -2,7 +2,7 @@ import numpy as np
 import random
 import math
 
-from neural_network import activations
+from neural_network import activations, costs
 
 class Layer:
     def __init__(self, num_input: int, num_output: int, activation: activations.Activation = activations.ReLU) -> None:
@@ -31,15 +31,18 @@ class Layer:
         return f"Layer({vars_string})"
 
     def calculate_outputs(self, inputs):
-        activations = np.empty(self.num_output)
+        self.inputs = inputs
+        self.activations = np.empty(self.num_output)
+        self.weighted_inputs = np.empty(self.num_output)
 
         for out in range(self.num_output):
             weighted_input = self.biases[out]
             for inp in range(self.num_input):
                 weighted_input += inputs[inp] * self.weights[inp][out]
-            activations[out] = self.activation.func(weighted_input)
+            self.weighted_inputs[out] = weighted_input
+            self.activations[out] = self.activation.func(weighted_input)
 
-        return activations
+        return self.activations
     
     def initialize_random_weights(self):
         for i in range(len(self.weights)):
@@ -55,3 +58,33 @@ class Layer:
     def reset_gradients(self):
         self.gradient_weights = np.zeros((self.num_input, self.num_output))
         self.gradient_biases = np.zeros(self.num_output)
+
+    def update_gradients(self, node_values):
+        for out in range(self.num_output):
+            for inp in range(self.num_input):
+                # derivative cost with respect to weight
+                self.gradient_weights[inp][out] += self.inputs[inp] * node_values[out]
+            # derivative cost with respect to bias
+            self.gradient_biases += 1 * node_values[out]
+
+    # Backpropagation
+    def caculate_output_layer_node_values(self, expected_outputs, cost: costs.Cost):
+        node_values = np.empty(self.num_output)
+        for i in range(self.num_output):
+            cost_derivative = cost.derivative(self.activations[i], expected_outputs[i])
+            activation_derivative = self.activation.derivative(self.weighted_inputs[i])
+            node_values[i] = activation_derivative * cost_derivative
+        return node_values
+    
+    def caculate_hidden_layer_node_values(self, prev_layer, prev_node_values):
+        node_values = np.empty(self.num_output)
+
+        for inp in range(self.num_output):
+            node_value = 0
+            for out in range(self.num_input):
+                weighted_input_derivative = prev_layer.weights[inp][out]
+                node_value += weighted_input_derivative * prev_node_values[out]
+            node_value *= self.activation.derivative(self.weighted_inputs[inp])
+            node_values[inp] = node_value
+
+        return node_values

@@ -37,7 +37,7 @@ def train_test_split(x, y, test_size=0.2, shuffle=True):
     y_train, y_test = y[:split_index], y[split_index:]
     return x_train, x_test, y_train, y_test
 
-def create_batches(data, batch_size):
+def create_batches(data, batch_size: int = 32):
     for i in range(0, len(data), batch_size):
         yield data[i:i+batch_size]
 
