@@ -1,6 +1,5 @@
 import numpy as np
-import math
-import random
+import threading
 
 from neural_network.layer import Layer
 from neural_network import costs
@@ -56,7 +55,14 @@ class NeuralNetwork:
         :param cost: The cost function to use when calculating the error between the network's output and the target output.
         """
         
+        threads = []
         for data in training_batch:
-            self.update_gradients(data[0], data[1], cost)
-        self.apply_gradients(learn_rate)
+            thread = threading.Thread(target=self.update_gradients, args=(data[0], data[1], cost))
+            thread.start()
+            threads.append(thread)
+        
+        for thread in threads:
+            thread.join()
+
+        self.apply_gradients(learn_rate / len(training_batch))
         self.reset_gradients()

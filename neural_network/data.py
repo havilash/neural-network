@@ -5,11 +5,12 @@ import numpy as np
 def get_mnist_data():
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
     x, y = np.concatenate((x_train, x_test)), np.concatenate((y_train, y_test))
-    x = x.reshape(-1, 28, 28, 1).astype('float32') / 255
+    x = x.astype('float32') / 255
     return x, y
 
 def get_augmented_mnist_data(n):
     x, y = get_mnist_data()
+    x = x.reshape(-1, 28, 28, 1)
     datagen = ImageDataGenerator(
         rotation_range=25,
         zoom_range=0.1,
@@ -24,7 +25,7 @@ def get_augmented_mnist_data(n):
     y = np.repeat(y, n)
     for i in range(x.shape[0]):
         x[i] = datagen.random_transform(x[i])
-    return x, y
+    return x.reshape(-1, 28, 28), y
 
 def train_test_split(x, y, test_size=0.2, shuffle=True):
     if shuffle:

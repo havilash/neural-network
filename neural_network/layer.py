@@ -79,12 +79,12 @@ class Layer:
     def caculate_hidden_layer_node_values(self, prev_layer, prev_node_values):
         node_values = np.empty(self.num_output)
 
-        for inp in range(self.num_output):
+        for i in range(len(node_values)):
             node_value = 0
-            for out in range(self.num_input):
-                weighted_input_derivative = prev_layer.weights[inp][out]
-                node_value += weighted_input_derivative * prev_node_values[out]
-            node_value *= self.activation.derivative(self.weighted_inputs[inp])
-            node_values[inp] = node_value
+            for j in range(len(prev_node_values)):
+                weighted_input_derivative = prev_layer.weights[i][j]
+                node_value += weighted_input_derivative * prev_node_values[j]
+            node_value *= self.activation.derivative(self.weighted_inputs[i])
+            node_values[i] = node_value
 
         return node_values
