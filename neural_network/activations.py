@@ -1,4 +1,4 @@
-import math
+import numpy as np
 
 
 class Activation:
@@ -14,7 +14,7 @@ class Activation:
 class Sigmoid(Activation):
     @staticmethod
     def func(x):
-        return 1 / (1 + math.exp(-x))
+        return 1 / (1 + np.exp(-x))
 
     @staticmethod
     def derivative(x):
@@ -24,20 +24,17 @@ class Sigmoid(Activation):
 class ReLU(Activation):
     @staticmethod
     def func(x):
-        return max(x, 0)
+        return np.maximum(x, 0)
 
     @staticmethod
     def derivative(x):
-        if x > 0:
-            return 1
-        else:
-            return 0
+        return (x > 0).astype(int)
 
 
 class TanH(Activation):
     @staticmethod
     def func(x):
-        num = math.exp(2 * x)
+        num = np.exp(2 * x)
         return (num - 1) / (num + 1)
 
     @staticmethod
@@ -48,11 +45,11 @@ class TanH(Activation):
 class SiLU(Activation):
     @staticmethod
     def func(x):
-        return x / (1 + math.exp(-x))
+        return x / (1 + np.exp(-x))
 
     @staticmethod
     def derivative(x):
-        e_x = math.exp(-x)
+        e_x = np.exp(-x)
         denominator = (1 + e_x) ** 2
         numerator = e_x * (x + 1) + x
         return numerator / denominator
@@ -71,7 +68,8 @@ class Identity(Activation):
 class Softmax(Activation):
     @staticmethod
     def func(x):
-        return math.exp(x) / (1 + math.exp(x))
+        exp_x = np.exp(x)
+        return exp_x / np.sum(exp_x)
 
     @staticmethod
     def derivative(x):

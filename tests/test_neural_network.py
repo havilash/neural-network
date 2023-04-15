@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from neural_network import activations, layer, neural_network
+from neural_network import activations, layer, nn
 
 
 def test_layer_weight_biases():
@@ -21,7 +21,7 @@ def test_layer_weight_biases():
 
 
 def test_nn_layer_creation():
-    nn = neural_network.NeuralNetwork([
+    nn = nn.NeuralNetwork([
         layer.Layer(3, 2, activations.Identity), 
     ])
     assert (
@@ -32,7 +32,7 @@ def test_nn_layer_creation():
 
 
 def test_nn_outputs():
-    nn = neural_network.NeuralNetwork([
+    nn = nn.NeuralNetwork([
         layer.Layer(3, 2, activations.Identity), 
     ])
     nn.layers[0].weights[0][0] = 4

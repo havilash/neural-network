@@ -45,8 +45,8 @@ class Layer:
         return self.activations
     
     def initialize_random_weights(self):
-        for i in range(len(self.weights)):
-            self.weights[i] = np.random.normal(0, 1) / np.sqrt(len(self.weights))
+        print("random normal", np.random.normal(0, 1, size=self.weights.shape))
+        self.weights = np.random.normal(0, 1, size=self.weights.shape) / np.sqrt(self.num_input)
 
     # Gradient Descent
     def apply_gradients(self, learn_rate: float):

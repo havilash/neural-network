@@ -36,7 +36,7 @@ class PyTest(TestCommand):
 
 
 setup(
-    name="Neural Network",
+    name="neural_netowork",
     version=neural_network.__version__,
     url="https://github.com/Havilash/Neural-Network/",
     author="Gregory Reiter, Havilash Sivaratnam",

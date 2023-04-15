@@ -1,6 +1,6 @@
 import numpy as np
 
-from neural_network import activations, costs, layer, neural_network
+from neural_network import activations, costs, layer, nn as neural_network
 from neural_network.data import get_mnist_data, get_augmented_mnist_data, train_test_split, create_batches
 
 def main():
@@ -21,12 +21,9 @@ def main():
         for i, batch in enumerate(data):
             print(i)
             print(nn.calculate_outputs(batch[0][0]), batch[0][1])
-            nn.learn((batch), .15)
+            nn.learn((batch), .3)
         print(nn.calculate_outputs(data[0][0]))
         print(data[0])
-    # import matplotlib.pyplot as plt
-    # plt.imshow(x, cmap='gray')
-    # plt.show()
 
 if __name__ == "__main__":
     main()
