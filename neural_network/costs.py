@@ -1,4 +1,4 @@
-import math
+import numpy as np
 
 
 class Cost:
@@ -14,11 +14,11 @@ class Cost:
 class MeanError(Cost):
     @staticmethod
     def func(output, expected_output):
-        return abs(output - expected_output)
+        return np.abs(output - expected_output)
      
     @staticmethod
     def derivative(output, expected_output):
-        return math.copysign(1, output - expected_output)
+        return np.sign(output - expected_output)
 
 
 class MeanSquaredError(Cost):
@@ -34,7 +34,7 @@ class MeanSquaredError(Cost):
 class BinaryCrossEntropy(Cost):
     @staticmethod
     def func(output, expected_output):
-        return -(expected_output * math.log(output) + (1 - expected_output) * math.log(1 - output))
+        return -(expected_output * np.log(output) + (1 - expected_output) * np.log(1 - output))
      
     @staticmethod
     def derivative(output, expected_output):
@@ -44,7 +44,7 @@ class BinaryCrossEntropy(Cost):
 class CategoricalCrossEntropy(Cost):
     @staticmethod
     def func(output, expected_output):
-        return -sum(expected_output * math.log(output))
+        return -np.sum(expected_output * np.log(output))
      
     @staticmethod
     def derivative(output, expected_output):
@@ -52,12 +52,15 @@ class CategoricalCrossEntropy(Cost):
 
 
 class SparseCategoricalCrossEntropy(Cost):
+    """
+    SparseCategoricalCrossEntropy is a variant of CategoricalCrossEntropy for multi-class classification with integer labels.
+    """
     @staticmethod
     def func(output, expected_output):
-        return -math.log(output[expected_output])
+        return -np.log(output[expected_output])
      
     @staticmethod
     def derivative(output, expected_output):
-        result = [0] * len(output)
+        result = np.zeros(len(output))
         result[expected_output] = -1 / output[expected_output]
         return result

@@ -11,6 +11,16 @@ class Activation:
         pass
 
 
+class Identity(Activation):
+    @staticmethod
+    def func(x):
+        return x
+
+    @staticmethod
+    def derivative(x):
+        return np.ones_like(x)
+    
+
 class Sigmoid(Activation):
     @staticmethod
     def func(x):
@@ -19,6 +29,17 @@ class Sigmoid(Activation):
     @staticmethod
     def derivative(x):
         return Sigmoid.func(x) * (1 - Sigmoid.func(x))
+
+
+class SiLU(Activation):
+    @staticmethod
+    def func(x):
+        return x * Sigmoid.func(x)
+
+    @staticmethod
+    def derivative(x):
+        sigmoid = Sigmoid.func(x)
+        return sigmoid + x * sigmoid * (1 - sigmoid)
 
 
 class ReLU(Activation):
@@ -40,29 +61,6 @@ class TanH(Activation):
     @staticmethod
     def derivative(x):
         return 1 - TanH.func(x) ** 2
-
-
-class SiLU(Activation):
-    @staticmethod
-    def func(x):
-        return x / (1 + np.exp(-x))
-
-    @staticmethod
-    def derivative(x):
-        e_x = np.exp(-x)
-        denominator = (1 + e_x) ** 2
-        numerator = e_x * (x + 1) + x
-        return numerator / denominator
-    
-    
-class Identity(Activation):
-    @staticmethod
-    def func(x):
-        return x
-
-    @staticmethod
-    def derivative(x):
-        return 1
     
 
 class Softmax(Activation):

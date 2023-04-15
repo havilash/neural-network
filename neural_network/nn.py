@@ -20,10 +20,7 @@ class NeuralNetwork:
     # Gradient Descent
     def cost(self, inputs, expected_outputs, node_cost: costs.Cost = costs.MeanSquaredError):
         outputs = self.calculate_outputs(inputs) 
-        cost = 0
-        for output, expected_output in zip(outputs, expected_outputs):
-            cost += node_cost.func(output, expected_output)
-        
+        cost = np.sum(node_cost.func(outputs, expected_outputs))
         return cost
 
     def reset_gradients(self):
