@@ -43,7 +43,6 @@ setup(
     tests_require=["pytest"],
     install_requires=[
         "numpy",
-        "pandas",
         "matplotlib",
         "keras",
         "jupyter",

@@ -1,3 +1,43 @@
 # Neural Network
 
-This project is a machine learning-based solution to classify different handwritten digits. The project uses the MNIST dataset to train a neural network.
+Neural Network Package
+
+## Description
+
+This project is a versatile neural network package that can be used for training various deep learning models, including image recognition. The package includes an example project for MNIST classification to demonstrate its capabilities. With its flexible architecture, the package is suitable for a range of tasks requiring deep learning, offering high accuracy and reliability.
+
+## Getting Started
+
+### Dependencies
+
+* python 3.7 or higher
+* numpy
+* pandas
+* matplotlib
+* keras
+
+### Installing
+
+1. Clone the repository
+2. Navigate to the package directory
+3. Run `pip install -r requirements.txt` to install dependencies
+
+or 
+
+1. Run `pip install git+https://github.com/Havilash/Neural-Network.git#egg=neural_network` to install package
+
+### Executing program
+
+* Import package
+```python
+import neural_network
+```
+* Run example project `python ./neural_network/main.py` or `python -m neural_network.main`
+
+## Authors
+ 
+* [@Havilash]
+
+## License
+
+see the LICENSE file for details
