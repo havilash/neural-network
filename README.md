@@ -12,7 +12,6 @@ This project is a versatile neural network package that can be used for training
 
 * python 3.7 or higher
 * numpy
-* pandas
 * matplotlib
 * keras
 
