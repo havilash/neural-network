@@ -35,7 +35,10 @@ import neural_network
 
 ## Authors
  
-* [@Havilash]
+* [@Havilash](https://github.com/Havilash)
+* [@Greg](https://github.com/rergr)
+* [@Nicolas](https://github.com/)
+* [@Ensar](https://github.com/)
 
 ## License
 
