@@ -17,9 +17,9 @@ def nn():
         layer.Layer(8, 2, activations.Sigmoid),
     ])
 
-def test_initial_outputs(nn):
+def test_outputs(nn):
     for d in data:
-        outputs = nn.calculate_outputs(d[0])
+        outputs = nn.predict(d[0])
         assert len(outputs) == 2
 
 def test_learning(nn):

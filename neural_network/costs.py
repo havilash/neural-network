@@ -48,7 +48,7 @@ class CategoricalCrossEntropy(Cost):
      
     @staticmethod
     def derivative(output, expected_output):
-        return -expected_output / output
+        return output - expected_output
 
 
 class SparseCategoricalCrossEntropy(Cost):

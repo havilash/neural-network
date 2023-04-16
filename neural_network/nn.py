@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import threading
 import pickle
 
@@ -46,14 +47,6 @@ class NeuralNetwork:
             hidden_layer.update_gradients(node_values)
 
     def learn(self, train_batch, learn_rate: float, cost: costs.Cost = costs.MeanSquaredError):
-        """
-        Update the gradients and apply them to the network based on a batch of training data.
-
-        :param training_batch: A list of tuples containing input and target output data. Each tuple represents a single training example with the first element being the input data (features) and the second element being the target output data (label). For example: [(x1, y1), (x2, y2), (x3, y3)] where x1, x2, x3 are the input data and y1, y2, y3 are the target output data.
-        :param learn_rate: The learning rate to use when applying the gradients.
-        :param cost: The cost function to use when calculating the error between the network's output and the target output.
-        """
-        
         threads = []
         for data in train_batch:
             thread = threading.Thread(target=self.update_gradients, args=(data[0], data[1], cost))
@@ -66,33 +59,35 @@ class NeuralNetwork:
         self.apply_gradients(learn_rate / len(train_batch))
         self.reset_gradients()
 
-    def train(self, train_data, test_data, learn_rate: float, cost: costs.Cost = costs.MeanSquaredError, batch_size: int = 32, epochs: int = 5, save: bool = False):
+    def train(self, train_data, test_data, learn_rate: float, cost: costs.Cost = costs.MeanSquaredError, batch_size: int = 32, epochs: int = 5, save: bool = False, file_name: str = "neural_network.pkl"):
         """
         Update the gradients and apply them to the network based on a list of batches of training data.
 
-        :param data: A list of batches of training data. Each batch is a list of tuples containing input and target output data. Each tuple represents a single training example with the first element being the input data (features) and the second element being the target output data (label). For example: [[(x1, y1), (x2, y2)], [(x3, y3), (x4, y4)]] where x1, x2, x3, x4 are the input data and y1, y2, y3, y4 are the target output data.
+        :param train_data: A list of batches of training data. Each batch is a list of tuples containing input and target output data. Each tuple represents a single training example with the first element being the input data (features) and the second element being the target output data (label). For example: [[(x1, y1), (x2, y2)], [(x3, y3), (x4, y4)]] where x1, x2, x3, x4 are the input data and y1, y2, y3, y4 are the target output data.
+        :param test_data: A list of tuples containing input and target output data for testing the accuracy of the model.
         :param learn_rate: The learning rate to use when applying the gradients.
         :param cost: The cost function to use when calculating the error between the network's output and the target output.
+        :param batch_size: The size of each batch of training data.
+        :param epochs: The number of times to iterate over the entire training dataset.
         :param save: Whether to save the model to a file after each epoch.
+        :param file_name: The name of the file to save the model to if `save` is `True`.
         """
         
         if save: 
-            file = open('neural_network.pkl', 'wb')
-        num_batches = len(train_data) // batch_size
-        num = (num_batches // 50)
+            file = open(file_name, 'wb')
+        num_batches = math.ceil(len(train_data) / batch_size)
+        bar_step = (num_batches / 50)
         print()
         print("Training ...")
         for epoch in range(epochs):
             print(f"Epoch {epoch+1}/{epochs}")
-            print("Progress: [", end="", flush=True)
+            print("- Progress: [", end="", flush=True)
             epoch_cost = 0
             for i, batch in enumerate(create_batches(train_data, batch_size)):
-                if i % num == 0:
-                    print("\u2588", end="", flush=True)
+                if i % bar_step < 1:
+                    print("\u2588" * int(max(1 / bar_step, 1)), end="", flush=True)
                 self.learn(batch, learn_rate)
-                epoch_cost += self.cost(batch[0][0], batch[0][1], cost)
-            epoch_cost /= num_batches
-            accuracy = self.validate(test_data)
+            accuracy, epoch_cost = self.validate(test_data, cost)
             print(f"] Cost: {epoch_cost:.4f} | Accuracy: {accuracy:.4f}")
             if save: self.save(file)
         if save: file.close()
@@ -108,17 +103,22 @@ class NeuralNetwork:
         else:
             raise TypeError(f"Loaded object is not an instance of NeuralNetwork. Got {type(obj)} instead.")
 
-    def validate(self, data):
+    def validate(self, data, cost: costs.Cost = costs.MeanSquaredError):
         """
-        Calculate the accuracy of the model on the data.
+        Calculate the accuracy and average cost of the model on the data.
 
         :param data: A list of tuples containing input and target output data. Each tuple represents a single example with the first element being the input data (features) and the second element being the target output data (label).
-        :return: The accuracy of the model on the data.
+        :param cost: The cost function to use when calculating the average cost of the model on the data.
+        :return: A tuple containing the accuracy and average cost of the model on the data.
         """
+
         correct_predictions = 0
-        for input, expected_output in data:
-            prediction = self.predict(input)
-            if np.argmax(prediction) == np.argmax(expected_output):
+        average_cost = 0
+        for inputs, expected_outputs in data:
+            prediction = self.predict(inputs)
+            if np.argmax(prediction) == np.argmax(expected_outputs):
                 correct_predictions += 1
+            average_cost += np.sum(cost.func(prediction, expected_outputs))
         accuracy = correct_predictions / len(data)
-        return accuracy
+        average_cost /= len(data)
+        return accuracy, average_cost

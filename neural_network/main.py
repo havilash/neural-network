@@ -1,5 +1,4 @@
 import numpy as np
-import pickle
 import matplotlib.pyplot as plt
 
 from neural_network import activations, costs, layer, nn as neural_network
@@ -20,13 +19,13 @@ def main():
     x_train, x_test, y_train, y_test = train_test_split(x, y)
     train_data = np.array(list(zip(x_train, y_train)))
     test_data = np.array(list(zip(x_test, y_test)))
-
-    nn.train(train_data, test_data, 0.2, batch_size=256, save=False)
     
+    """
+    nn.train(train_data, test_data, 0.25, cost=costs.CategoricalCrossEntropy, batch_size=256, save=True)
+    """
+
     with open('neural_network.pkl', 'rb') as f:
         nn = neural_network.NeuralNetwork.load(f)
-
-    print("Accuracy: ", nn.validate(test_data[:100]))
 
     fig, axes = plt.subplots(3, 3, figsize=(6, 6))
     for i in range(3):
