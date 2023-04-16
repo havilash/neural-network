@@ -38,7 +38,7 @@ import neural_network
 * [@Havilash](https://github.com/Havilash)
 * [@Greg](https://github.com/rergr)
 * [@Nicolas](https://github.com/)
-* [@Ensar](https://github.com/)
+* [@Ensar](https://github.com/Ensar05)
 
 ## License
 
