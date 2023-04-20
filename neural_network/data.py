@@ -1,19 +1,23 @@
+import numpy as np
 from keras.datasets import mnist
 from keras.preprocessing.image import ImageDataGenerator
-import numpy as np
+from sklearn.model_selection import train_test_split
 
-def get_mnist_data():
+def get_mnist_data(limit=None):
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
     x, y = np.concatenate((x_train, x_test)), np.concatenate((y_train, y_test))
     x = x.astype('float32') / 255
+    if limit is not None:
+        x, y = x[:limit], y[:limit]
     return x, y
 
-def get_augmented_mnist_data(n):
-    x, y = get_mnist_data()
+
+def get_augmented_mnist_data(n, limit=None):
+    x, y = get_mnist_data(limit=limit)
     x = x.reshape(-1, 28, 28, 1)
     datagen = ImageDataGenerator(
-        rotation_range=25,
-        zoom_range=0.1,
+        rotation_range=15,
+        zoom_range=0.2,
         width_shift_range=0.1,
         height_shift_range=0.1,
         shear_range=5,
@@ -27,6 +31,7 @@ def get_augmented_mnist_data(n):
         x[i] = datagen.random_transform(x[i])
     return x.reshape(-1, 28, 28), y
 
+'''
 def train_test_split(x, y, test_size=0.2, shuffle=True):
     if shuffle:
         indices = np.arange(x.shape[0])
@@ -37,17 +42,19 @@ def train_test_split(x, y, test_size=0.2, shuffle=True):
     x_train, x_test = x[:split_index], x[split_index:]
     y_train, y_test = y[:split_index], y[split_index:]
     return x_train, x_test, y_train, y_test
+'''
 
 def create_batches(data, batch_size: int = 32):
     for i in range(0, len(data), batch_size):
         yield data[i:i+batch_size]
 
+
 if __name__ == "__main__":
     from matplotlib import pyplot as plt
     import random 
 
-    x, y = get_mnist_data()
-    x_augmented, y_augmented = get_augmented_mnist_data(6)
+    x, y = get_mnist_data(1)
+    x_augmented, y_augmented = get_augmented_mnist_data(6, 1)
 
     random_index = random.randint(0, len(x) - 1)
     base_image = x[random_index]
@@ -61,6 +68,6 @@ if __name__ == "__main__":
     ax1.imshow(base_image.reshape(28, 28), cmap='gray')
     ax1.set_title('Base Image')
     for i in range(6):
+        print(augmented_images.shape)
         ax2[i].imshow(augmented_images[i].reshape(28, 28), cmap='gray')
-        ax2[i].set_title(f'Augmented Image {i+1}')
     plt.show()

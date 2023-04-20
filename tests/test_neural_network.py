@@ -25,5 +25,5 @@ def test_outputs(nn):
 def test_learning(nn):
     for _ in range(1000):
         nn.learn(data, .15)
-    cost = nn.cost(*data[0])
+    _, cost = nn.validate(data)
     assert cost < 0.1

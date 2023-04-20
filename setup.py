@@ -4,8 +4,6 @@ import io
 import os
 import sys
 
-import neural_network
-
 here = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -20,6 +18,7 @@ def read(*filenames, **kwargs):
 
 
 long_description = read("docs/README.txt")
+requirements = read("requirements.txt").split('\n')
 
 
 class PyTest(TestCommand):
@@ -37,16 +36,16 @@ class PyTest(TestCommand):
 
 setup(
     name="neural_netowork",
-    version=neural_network.__version__,
+    version='1.0.0',
     url="https://github.com/Havilash/Neural-Network/",
-    author="Gregory Reiter, Havilash Sivaratnam",
+    author="Nicolas Thöni Castillo, Ensar Korkmaz, Gregory Reiter, Havilash Sivaratnam",
+    license="MIT",
+    keywords=["neural network", "MNIST", "classification"],
     tests_require=["pytest"],
-    install_requires=[
-        "numpy",
-        "matplotlib",
-        "keras",
-        "jupyter",
-    ],
+    install_requires=requirements,
+    extras_require={
+        "dev": ["pytest"],
+    },
     cmdclass={"test": PyTest},
     description="own Neural Network",
     long_description=long_description,
@@ -55,9 +54,12 @@ setup(
     platforms="any",
     test_suite="tests",
     classifiers=[
-        "Programming Language :: Python",
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
-    extras_require={
-        "testing": ["pytest"],
-    },
+    entry_points={
+},
 )
