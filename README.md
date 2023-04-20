@@ -1,10 +1,10 @@
 # Neural Network
 
-Neural Network Package
+Classification Neural Network
 
 ## Description
 
-This project is a versatile neural network package that can be used for training various deep learning models, including image recognition. The package includes an example project for MNIST classification to demonstrate its capabilities. With its flexible architecture, the package is suitable for a range of tasks requiring deep learning, offering high accuracy and reliability.
+This project is a versatile neural network package specifically designed for classification tasks. It can be used for training various deep learning models, including image recognition. The package includes an example project for MNIST classification to demonstrate its capabilities. With its flexible architecture, the package is suitable for a range of classification tasks requiring deep learning, offering high accuracy and reliability.
 
 ## Getting Started
 
@@ -19,7 +19,7 @@ This project is a versatile neural network package that can be used for training
 
 1. Clone the repository
 2. Navigate to the package directory
-3. Run `pip install -r requirements.txt` to install dependencies
+3. Run `pip install .` to install package
 
 or 
 
