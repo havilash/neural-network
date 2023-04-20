@@ -14,6 +14,9 @@ This project is a versatile neural network package specifically designed for cla
 * numpy
 * matplotlib
 * keras
+* tensorflow
+* scikit-learn
+* jupyter
 
 ### Installing
 
