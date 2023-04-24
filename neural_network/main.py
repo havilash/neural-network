@@ -11,7 +11,7 @@ def main():
         layers.Conv2D(ALL_FILTERS),
         layers.MaxPooling2D(),
         layers.Flatten(),
-        layers.Dense((26*26)//4 * 8, 128, activations.ReLU),
+        layers.Dense(13 * 13 * len(ALL_FILTERS), 128, activations.ReLU),
         layers.Dense(128, 10, activations.Softmax),
     ])
     
