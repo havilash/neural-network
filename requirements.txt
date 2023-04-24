@@ -1,6 +1,5 @@
 numpy
 matplotlib
-keras
-tensorflow
+albumentations
 scikit-learn
 jupyter

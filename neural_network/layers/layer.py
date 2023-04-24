@@ -9,9 +9,9 @@ class Layer:
         self.asdf = [1, 2, 3, 4, 5]
 
     def __repr__(self):
-        name = str(self.__class__.__name__)
-        dict = repr(self.__dict__)[1:-1]
-        return f"{name}({dict})"
+        name = self.__class__.__name__
+        attrs = ', '.join(f'{k}={v!r}' for k, v in self.__dict__.items())
+        return f"{name}({attrs})"
 
     def calculate_outputs(self, inputs):
         return inputs

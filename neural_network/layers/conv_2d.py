@@ -3,7 +3,7 @@ from neural_network import filters
 from neural_network.layers import Layer
 
 class Conv2D(Layer):
-    def __init__(self, filters: [np.ndarray] = filters.ALL_FILTERS):
+    def __init__(self, filters: list[np.ndarray] = filters.ALL_FILTERS):
         self.filters = filters
 
     def apply_conv(self, inputs, filter):
@@ -28,25 +28,24 @@ class Conv2D(Layer):
 
 
 if __name__ == '__main__':
-    from matplotlib.image import imread
     import matplotlib.pyplot as plt
-    from PIL import Image
+    from neural_network.data import get_mnist_data
+    import random
 
-    img = Image.open('eye-png-23.png')
-    img_grey = img.convert('L')
+    x, y = get_mnist_data()
+    random_index = random.randint(0, len(x) - 1)
+    img = x[random_index].reshape(28, 28)
 
     conv2d = Conv2D(filters.ALL_FILTERS)
-    nparay = np.asarray(img_grey)
-    output = conv2d.calculate_outputs(nparay)
+    output = conv2d.calculate_outputs(img)
 
     # Display the original and transformed images side by side
-    fig, axs = plt.subplots(2, 4, figsize=(12, 6))
+    fig, axs = plt.subplots(3, 3, figsize=(9, 9))
     axs = axs.flatten()
-    axs[0].imshow(img_grey, cmap='gray')
-    axs[0].set_title('Original')
+    axs[0].imshow(img, cmap='gray')
+    axs[0].set_title('Base Image')
 
     for i, filter in enumerate(filters.ALL_FILTERS):
-        axs[i].imshow(output[:, :, i-1], cmap='gray')
-        axs[i].set_title(f'Filter {i}')
+        axs[i+1].imshow(output[:, :, i], cmap='gray')
 
     plt.show()
