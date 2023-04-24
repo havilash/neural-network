@@ -6,7 +6,7 @@ import random
 
 
 def get_mnist_data(limit=None):
-    mnist = fetch_openml('mnist_784', version=1, parser='auto')
+    mnist = fetch_openml('mnist_784', version=1, as_frame=False, parser='liac-arff')
     x, y = np.array(mnist['data']), np.array(mnist['target'])
     x = (x.astype('float32') / 255).reshape((-1, 28, 28))
     y = y.astype('int32')

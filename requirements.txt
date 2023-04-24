@@ -4,3 +4,4 @@ albumentations
 scikit-learn
 jupyter
 scipy
+scikit-image

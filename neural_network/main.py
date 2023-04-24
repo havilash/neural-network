@@ -8,10 +8,10 @@ from neural_network.filters import ALL_FILTERS
 
 def main():
     nn = neural_network.NeuralNetwork([
-        layers.Conv2D(ALL_FILTERS[:2]),
+        layers.Conv2D(ALL_FILTERS),
         layers.MaxPooling2D(),
         layers.Flatten(),
-        layers.Dense((28*28)//2, 128, activations.ReLU),
+        layers.Dense((26*26)//4 * 8, 128, activations.ReLU),
         layers.Dense(128, 10, activations.Softmax),
     ])
     
@@ -22,7 +22,7 @@ def main():
     # x = x.reshape(-1, 28*28)
     y = np.array([one_hot(i) for i in y])
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
-    train_data = np.array(list(zip(x_train, y_train)), dtype=object)[:2560]
+    train_data = np.array(list(zip(x_train, y_train)), dtype=object)
     test_data = np.array(list(zip(x_test, y_test)), dtype=object)
 
     

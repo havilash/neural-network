@@ -1,25 +1,16 @@
 import numpy as np
 from neural_network import filters
 from neural_network.layers import Layer
-
-
+from skimage.measure import block_reduce
 
 class MaxPooling2D(Layer):
     def __init__(self, pool_size: int = 2):
         self.pool_size = pool_size
 
     def calculate_outputs(self, inputs):
-        height, width, channels = inputs.shape
-        pooled_height = height // self.pool_size
-        pooled_width = width // self.pool_size
-
-        # Reshape the input array to prepare for max pooling
-        reshaped_inputs = inputs.reshape(pooled_height, self.pool_size,
-                                        pooled_width, self.pool_size,
-                                        channels)
-
-        # Perform max pooling along the second and fourth axes
-        pooled_outputs = np.max(reshaped_inputs, axis=(1, 3))
+        pooled_outputs = np.empty((inputs.shape[0] // 2, inputs.shape[1] // 2, inputs.shape[2]))
+        for i in range(inputs.shape[2]):
+            pooled_outputs[:, :, i] = block_reduce(inputs[:, :, i], (2, 2), np.max)
 
         return pooled_outputs
 
