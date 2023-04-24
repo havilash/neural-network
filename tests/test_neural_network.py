@@ -1,8 +1,7 @@
 import pytest
-import numpy as np
 
-from neural_network import activations, layer, nn as neural_network
-
+from neural_network import activations, nn as neural_network
+from neural_network.layers import layer
 
 data = [
     ([-1, -2], [0, 1]),

@@ -3,7 +3,7 @@ import math
 import threading
 import pickle
 
-from neural_network.layer import Layer
+from neural_network.layers.layer import Layer
 from neural_network import costs
 from neural_network.data import create_batches
 

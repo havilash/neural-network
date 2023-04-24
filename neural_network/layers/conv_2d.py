@@ -11,12 +11,6 @@ from neural_network import activations, costs
 # Robinson Compass Masks
 # Krisch Compass Masks
 
-perwitt_filter = np.array([[1, 1, 1],
-                           [0, 0, 0],
-                           [-1, -1, -1]])
-
-filters = {1: perwitt_filter}
-
 class Conv2D():
     def __init__(self, input_array: np.ndarray, filters: dict) -> []:
         self.input_array = input_array

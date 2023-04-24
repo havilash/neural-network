@@ -1,13 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from neural_network import activations, costs, layer, nn as neural_network
-from neural_network.data import get_mnist_data, get_augmented_mnist_data, train_test_split, create_batches
+from neural_network import activations, costs, nn as neural_network
+from neural_network.layers import layer
+from neural_network.data import get_mnist_data, train_test_split
 
 
 def main():
     nn = neural_network.NeuralNetwork([
-        layer.Layer(28*28, 128, activations.ReLU), 
+        layer.Layer(28 * 28, 128, activations.ReLU),
         layer.Layer(128, 10, activations.Softmax),
     ])
     
