@@ -3,6 +3,7 @@ from keras.datasets import mnist
 from keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
 
+
 def get_mnist_data(limit=None):
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
     x, y = np.concatenate((x_train, x_test)), np.concatenate((y_train, y_test))
@@ -31,6 +32,7 @@ def get_augmented_mnist_data(n, limit=None):
         x[i] = datagen.random_transform(x[i])
     return x.reshape(-1, 28, 28), y
 
+
 '''
 def train_test_split(x, y, test_size=0.2, shuffle=True):
     if shuffle:
@@ -43,6 +45,7 @@ def train_test_split(x, y, test_size=0.2, shuffle=True):
     y_train, y_test = y[:split_index], y[split_index:]
     return x_train, x_test, y_train, y_test
 '''
+
 
 def create_batches(data, batch_size: int = 32):
     for i in range(0, len(data), batch_size):

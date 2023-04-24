@@ -3,4 +3,4 @@ matplotlib
 keras
 tensorflow
 scikit-learn
-jupyterd
+jupyter

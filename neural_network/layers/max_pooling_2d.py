@@ -1,40 +1,56 @@
 import numpy as np
-import random
-import math
+from neural_network import filters
+from neural_network.layers import Layer
 
-from neural_network import activations, costs
 
-class MaxPooling2D:
-    def __init__(self, input_array: np.ndarray) -> []:
-        self.input_array = input_array
-        self.size_x = input_array.shape[0]
-        self.size_y = input_array.shape[1]
-        self.images = []
-        self.new_x = int(self.size_x / 2)
-        self.new_y = int(self.size_y / 2)
 
-        self.apply_conv()
+class MaxPooling2D(Layer):
+    def __init__(self, pool_size: int = 2):
+        self.pool_size = pool_size
 
-    def apply_conv(self, weight, filter):
-        filter_size_x, filter_size_y = filter.shape
-        pad_x = (filter_size_x - 1) // 2
-        pad_y = (filter_size_y - 1) // 2
-        padded_input = np.pad(self.input_array, ((pad_x, pad_x), (pad_y, pad_y)), mode='constant')
-        transformed_image = np.zeros_like(self.input_array)
-        for x in range(self.size_x):
-            for y in range(self.size_y):
-                convolution = np.sum(padded_input[x:x + filter_size_x, y:y + filter_size_y] * filter) * weight
-                convolution = np.clip(convolution, 0, 255)
-                transformed_image[x, y] = convolution
-        self.images.append(transformed_image)
+    def calculate_outputs(self, inputs):
+        height, width, channels = inputs.shape
+        pooled_height = height // self.pool_size
+        pooled_width = width // self.pool_size
 
-    #
-    # def apply_conv(self):
-    #     newImage = np.empty((self.new_x, self.new_y))
-    #
-    #     for x in range(0, self.size_x, 2):
-    #         for y in range(0, self.size_y, 2):
-    #             pixels = np.array([self.input_array[x:x+1, y:y+1]])
-    #             newImage[int(x / 2), int(y / 2)] = max(pixels)
-    #
-    #     self.images.append(newImage)
+        pooled_outputs = np.zeros((pooled_height, pooled_width, channels))
+        for h in range(pooled_height):
+            for w in range(pooled_width):
+                for c in range(channels):
+                    start_h = h * self.pool_size
+                    end_h = start_h + self.pool_size
+                    start_w = w * self.pool_size
+                    end_w = start_w + self.pool_size
+
+                    pooled_outputs[h, w, c] = np.max(inputs[start_h:end_h, start_w:end_w, c])
+
+        return pooled_outputs
+
+if __name__ == '__main__':
+
+    from matplotlib.image import imread
+    import matplotlib.pyplot as plt
+    from PIL import Image
+    from conv_2d import Conv2D
+
+    conv2d = Conv2D(filters.ALL_FILTERS)
+
+    img = Image.open('eye-png-23.png')
+    img_grey = img.convert('L')
+
+    max = MaxPooling2D()
+    arr = np.asarray(img_grey)
+    nparay = conv2d.calculate_outputs(arr)
+    output = max.calculate_outputs(nparay)
+
+    # Display the original and transformed images side by side
+    fig, axs = plt.subplots(2, 4, figsize=(12, 6))
+    axs = axs.flatten()
+    axs[0].imshow(img_grey, cmap='gray')
+    axs[0].set_title('Original')
+
+    for i, filter in enumerate(filters.ALL_FILTERS):
+        axs[i].imshow(output[:, :, i-1], cmap='gray')
+        axs[i].set_title(f'Filter {i}')
+
+    plt.show()

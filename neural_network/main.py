@@ -1,28 +1,31 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from neural_network import activations, costs, nn as neural_network
-from neural_network.layers import layer
+from neural_network import activations, costs, nn as neural_network, layers
 from neural_network.data import get_mnist_data, train_test_split
+from neural_network.filters import ALL_FILTERS
 
 
 def main():
     nn = neural_network.NeuralNetwork([
-        layer.Layer(28 * 28, 128, activations.ReLU),
-        layer.Layer(128, 10, activations.Softmax),
+        layers.Conv2D(ALL_FILTERS[:2]),
+        layers.MaxPooling2D(),
+        layers.Flatten(),
+        layers.Dense(14 * 14 * 2, 128, activations.ReLU),
+        layers.Dense(128, 10, activations.Softmax),
     ])
     
     one_hot = lambda y: np.eye(10)[y]
 
     x, y = get_mnist_data()
     # x, y = get_augmented_mnist_data(3)  # needs some time
-    x = x.reshape(-1, 28*28)
+    # x = x.reshape(-1, 28*28)
     y = np.array([one_hot(i) for i in y])
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
-    train_data = np.array(list(zip(x_train, y_train)))
-    test_data = np.array(list(zip(x_test, y_test)))
+    train_data = np.array(list(zip(x_train, y_train)), dtype=object)[:2560]
+    test_data = np.array(list(zip(x_test, y_test)), dtype=object)
     
-    nn.train(train_data, test_data, 0.25, cost=costs.CategoricalCrossEntropy, batch_size=32, save=False, file_name="neural_network.pkl")
+    nn.train(train_data, test_data, 0.25, cost=costs.CategoricalCrossEntropy, batch_size=32, epochs=5, save=False, file_name="neural_network.pkl")
     
     '''
     with open('neural_network.pkl', 'rb') as f:

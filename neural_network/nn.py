@@ -3,9 +3,10 @@ import math
 import threading
 import pickle
 
-from neural_network.layers.layer import Layer
+from neural_network.layers import Layer, Dense
 from neural_network import costs
 from neural_network.data import create_batches
+from neural_network import constants
 
 
 class NeuralNetwork:
@@ -20,7 +21,7 @@ class NeuralNetwork:
             inputs = layer.calculate_outputs(inputs)
         return inputs
     
-    def cost(self, inputs, expected_outputs, node_cost: costs.Cost = costs.MeanSquaredError):
+    def cost(self, inputs, expected_outputs, node_cost: costs.Cost = constants.DEFAULT_COST):
         outputs = self.predict(inputs) 
         cost = np.sum(node_cost.func(outputs, expected_outputs))
         print(node_cost.func(outputs, expected_outputs))
@@ -38,15 +39,15 @@ class NeuralNetwork:
         self.predict(inputs)
 
         output_layer = self.layers[-1]
-        node_values = output_layer.caculate_output_layer_node_values(expected_outputs, cost)
+        node_values = output_layer.calculate_output_layer_node_values(expected_outputs, cost)
         output_layer.update_gradients(node_values)
 
         for i in range(len(self.layers) - 2, -1, -1):
             hidden_layer = self.layers[i]
-            node_values = hidden_layer.caculate_hidden_layer_node_values(self.layers[i+1], node_values)
+            node_values = hidden_layer.calculate_node_values(self.layers[i + 1], node_values)
             hidden_layer.update_gradients(node_values)
 
-    def learn(self, train_batch, learn_rate: float, cost: costs.Cost = costs.MeanSquaredError):
+    def learn(self, train_batch, learn_rate: float, cost: costs.Cost = constants.DEFAULT_COST):
         threads = []
         for data in train_batch:
             thread = threading.Thread(target=self.update_gradients, args=(data[0], data[1], cost))
@@ -59,7 +60,7 @@ class NeuralNetwork:
         self.apply_gradients(learn_rate / len(train_batch))
         self.reset_gradients()
 
-    def train(self, train_data, test_data, learn_rate: float, cost: costs.Cost = costs.MeanSquaredError, batch_size: int = 32, epochs: int = 5, save: bool = False, file_name: str = "neural_network.pkl"):
+    def train(self, train_data, test_data, learn_rate: float, cost: costs.Cost = constants.DEFAULT_COST, batch_size: int = 32, epochs: int = 5, save: bool = False, file_name: str = "neural_network.pkl"):
         """
         Update the gradients and apply them to the network based on a list of batches of training data.
 
@@ -103,7 +104,7 @@ class NeuralNetwork:
         else:
             raise TypeError(f"Loaded object is not an instance of NeuralNetwork. Got {type(obj)} instead.")
 
-    def validate(self, data, cost: costs.Cost = costs.MeanSquaredError):
+    def validate(self, data, cost: costs.Cost = constants.DEFAULT_COST):
         """
         Calculate the accuracy and average cost of the model on the data.
 
