@@ -27,26 +27,25 @@ class MaxPooling2D(Layer):
         return pooled_outputs
 
 if __name__ == '__main__':
+    from neural_network.data import get_mnist_data
+    from neural_network.layers import Conv2D
+    import random
+    from matplotlib import pyplot as plt
 
-    from matplotlib.image import imread
-    import matplotlib.pyplot as plt
-    from PIL import Image
-    from conv_2d import Conv2D
+    x, y = get_mnist_data()
+    random_index = random.randint(0, len(x) - 1)
+    img = x[random_index].reshape(28, 28)
 
     conv2d = Conv2D(filters.ALL_FILTERS)
+    max_pooling = MaxPooling2D()
 
-    img = Image.open('eye-png-23.png')
-    img_grey = img.convert('L')
-
-    max = MaxPooling2D()
-    arr = np.asarray(img_grey)
-    nparay = conv2d.calculate_outputs(arr)
-    output = max.calculate_outputs(nparay)
+    nparay = conv2d.calculate_outputs(img)
+    output = max_pooling.calculate_outputs(nparay)
 
     # Display the original and transformed images side by side
     fig, axs = plt.subplots(2, 4, figsize=(12, 6))
     axs = axs.flatten()
-    axs[0].imshow(img_grey, cmap='gray')
+    axs[0].imshow(img, cmap='gray')
     axs[0].set_title('Original')
 
     for i, filter in enumerate(filters.ALL_FILTERS):

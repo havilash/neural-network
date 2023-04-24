@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.datasets import fetch_openml
+from sklearn.model_selection import train_test_split
 import albumentations as alb
 import random
 
@@ -8,6 +9,7 @@ def get_mnist_data(limit=None):
     mnist = fetch_openml('mnist_784', version=1, parser='auto')
     x, y = np.array(mnist['data']), np.array(mnist['target'])
     x = x.astype('float32') / 255
+    y = y.astype('int32')
     if limit is not None:
         x, y = x[:limit], y[:limit]
     return x, y
