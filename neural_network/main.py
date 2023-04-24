@@ -11,7 +11,7 @@ def main():
         layers.Conv2D(ALL_FILTERS[:2]),
         layers.MaxPooling2D(),
         layers.Flatten(),
-        layers.Dense(14 * 14 * 2, 128, activations.ReLU),
+        layers.Dense((28*28)//2, 128, activations.ReLU),
         layers.Dense(128, 10, activations.Softmax),
     ])
     
@@ -24,6 +24,7 @@ def main():
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
     train_data = np.array(list(zip(x_train, y_train)), dtype=object)[:2560]
     test_data = np.array(list(zip(x_test, y_test)), dtype=object)
+
     
     nn.train(train_data, test_data, 0.25, cost=costs.CategoricalCrossEntropy, batch_size=32, epochs=5, save=False, file_name="neural_network.pkl")
     

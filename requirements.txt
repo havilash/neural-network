@@ -3,3 +3,4 @@ matplotlib
 albumentations
 scikit-learn
 jupyter
+scipy

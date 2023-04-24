@@ -13,16 +13,13 @@ class MaxPooling2D(Layer):
         pooled_height = height // self.pool_size
         pooled_width = width // self.pool_size
 
-        pooled_outputs = np.zeros((pooled_height, pooled_width, channels))
-        for h in range(pooled_height):
-            for w in range(pooled_width):
-                for c in range(channels):
-                    start_h = h * self.pool_size
-                    end_h = start_h + self.pool_size
-                    start_w = w * self.pool_size
-                    end_w = start_w + self.pool_size
+        # Reshape the input array to prepare for max pooling
+        reshaped_inputs = inputs.reshape(pooled_height, self.pool_size,
+                                        pooled_width, self.pool_size,
+                                        channels)
 
-                    pooled_outputs[h, w, c] = np.max(inputs[start_h:end_h, start_w:end_w, c])
+        # Perform max pooling along the second and fourth axes
+        pooled_outputs = np.max(reshaped_inputs, axis=(1, 3))
 
         return pooled_outputs
 
@@ -34,7 +31,7 @@ if __name__ == '__main__':
 
     x, y = get_mnist_data()
     random_index = random.randint(0, len(x) - 1)
-    img = x[random_index].reshape(28, 28)
+    img = x[random_index]
 
     conv2d = Conv2D(filters.ALL_FILTERS)
     max_pooling = MaxPooling2D()

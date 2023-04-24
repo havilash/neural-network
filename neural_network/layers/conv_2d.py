@@ -1,20 +1,15 @@
 import numpy as np
 from neural_network import filters
 from neural_network.layers import Layer
+import scipy
 
 class Conv2D(Layer):
     def __init__(self, filters: list[np.ndarray] = filters.ALL_FILTERS):
         self.filters = filters
 
     def apply_conv(self, inputs, filter):
-        transformed_image = np.zeros_like(inputs)
-        for x in range(1, inputs.shape[0] - 1):
-            for y in range(1, inputs.shape[1] - 1):
-                convolution = np.sum(filter * inputs[x - 1:x + 2, y - 1:y + 2])
-                convolution = np.clip(convolution, 0, 255)
-
-                transformed_image[x, y] = convolution
-
+        transformed_image = scipy.signal.convolve2d(inputs, filter, mode='valid')
+        transformed_image = np.clip(transformed_image, 0, 255)
         return transformed_image
 
     def calculate_outputs(self, inputs):
@@ -22,8 +17,8 @@ class Conv2D(Layer):
         for filter in self.filters:
             imgs.append(self.apply_conv(inputs, filter))
 
-
         output = np.stack(imgs, axis=-1)
+        
         return output
 
 
@@ -34,7 +29,7 @@ if __name__ == '__main__':
 
     x, y = get_mnist_data()
     random_index = random.randint(0, len(x) - 1)
-    img = x[random_index].reshape(28, 28)
+    img = x[random_index]
 
     conv2d = Conv2D(filters.ALL_FILTERS)
     output = conv2d.calculate_outputs(img)
