@@ -5,3 +5,5 @@ scikit-learn
 jupyter
 scipy
 scikit-image
+pillow
+customtkinter

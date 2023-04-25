@@ -1,22 +1,25 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from neural_network import activations, costs, nn as neural_network, layers
-from neural_network.data import get_mnist_data, train_test_split
+from neural_network import activations, costs, nn as neural_network, layers, gui
+from neural_network.data import get_mnist_data, get_augmented_mnist_data, train_test_split
 from neural_network.filters import ALL_FILTERS
 from PIL import Image
 
 
-def recognize(img_path, nn_path = 'neural_network.pkl'):
+def recognize(image: Image, nn_path = 'neural_network.pkl'):
     with open(nn_path, 'rb') as f:
         nn = neural_network.NeuralNetwork.load(f)
 
-    img = Image.open(img_path).convert('L')
-    img = img.resize((28, 28), Image.ANTIALIAS) 
+    img = image.convert('L')
+    img = img.resize((28, 28), Image.LANCZOS) 
     img = np.array(img) 
     img = img.reshape(28, 28)
     prediction = nn.predict(img)
+    print(prediction)
+    return prediction
 
+    '''
     # display image and prediction
     fig, (ax1, ax2) = plt.subplots(1, 2)
     ax1.imshow(img.reshape(28, 28), cmap='gray')
@@ -32,6 +35,7 @@ def recognize(img_path, nn_path = 'neural_network.pkl'):
     ax2.set_ylabel('Probability')
 
     plt.show()
+    '''
 
 def train():
     input_shape = (28, 28)
@@ -47,17 +51,14 @@ def train():
     
     one_hot = lambda y: np.eye(10)[y]
 
-    x, y = get_mnist_data()
-    # x, y = get_augmented_mnist_data(3)  # needs some time
-    # x = x.reshape(-1, 28*28)
+    # x, y = get_mnist_data()
+    x, y = get_augmented_mnist_data(3)  # needs some time
     y = np.array([one_hot(i) for i in y])
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
     train_data = np.array(list(zip(x_train, y_train)), dtype=object)
     test_data = np.array(list(zip(x_test, y_test)), dtype=object)
 
-    '''    
-    nn.train(train_data, test_data, 0.25, cost=costs.CategoricalCrossEntropy, batch_size=32, epochs=5, save=True, file_name="neural_network.pkl")
-    '''
+    nn.train(train_data, test_data, 0.2, cost=costs.CategoricalCrossEntropy, batch_size=32, epochs=5, save=True, file_name="neural_network.pkl")
 
     with open('neural_network.pkl', 'rb') as f:
         nn = neural_network.NeuralNetwork.load(f)
@@ -78,7 +79,7 @@ def train():
 
 def main():
     train()
-    recognize(img_path='neural_network/num.png')
+    gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network.pkl'))
 
 if __name__ == "__main__":
     main()
