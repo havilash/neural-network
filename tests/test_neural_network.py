@@ -1,7 +1,7 @@
 import pytest
 
 from neural_network import activations, nn as neural_network
-from neural_network.layers import layer
+from neural_network import layers
 
 data = [
     ([-1, -2], [0, 1]),
@@ -12,8 +12,8 @@ data = [
 @pytest.fixture
 def nn():
     return neural_network.NeuralNetwork([
-        layer.Layer(2, 8, activations.Identity), 
-        layer.Layer(8, 2, activations.Sigmoid),
+        layers.Dense(2, 8, activations.Identity), 
+        layers.Dense(8, 2, activations.Sigmoid),
     ])
 
 def test_outputs(nn):
