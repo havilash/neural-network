@@ -1,4 +1,4 @@
-from PIL import ImageTk, Image, ImageDraw
+from PIL import ImageTk, Image, ImageDraw, ImageOps
 import PIL
 import customtkinter
 import numpy as np
@@ -18,6 +18,9 @@ class GUI:
         self.root = customtkinter.CTk()
         self.root.geometry(f'{self.width}x{self.height}')
         self.root.resizable(False, False)
+        self.root.title("PyCore")
+        self.root.iconbitmap('logo.ico')
+
 
         self.num = []
         self.per = []
@@ -75,7 +78,7 @@ class GUI:
         self.root.mainloop()
 
     def recognize(self):
-        self.prediction = self.recognize_digit(self.image)
+        self.prediction = self.recognize_digit(ImageOps.invert(self.image))
         self.update()
 
         self.open()
@@ -92,10 +95,13 @@ class GUI:
         self.hide_guess()
 
     def paint(self, event):
-        if self.px is None or self.py is None: 
+        if self.px is None or self.py is None:
             self.px, self.py = event.x, event.y
-        self.cv.create_line(event.x, event.y, self.px, self.py, fill='black', width=15)
-        self.draw.line((event.x, event.y, self.px, self.py), fill='black')
+        x, y = event.x, event.y
+        w = 10
+        corners = [(x - w, y - w), (x + w, y - w), (x + w, y + w), (x - w, y + w)]
+        self.cv.create_polygon(corners, fill='black')
+        self.draw.polygon(corners, fill='black')
         self.px, self.py = event.x, event.y
 
     def expand_window(self):
