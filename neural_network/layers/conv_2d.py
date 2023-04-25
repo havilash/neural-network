@@ -17,8 +17,6 @@ class Conv2D(Layer):
         for filter in self.filters:
             imgs.append(self.apply_conv(inputs, filter))
 
-        # print(imgs)
-
         output = np.stack(imgs, axis=-1)
         
         return output

@@ -2,6 +2,7 @@ import numpy as np
 import math
 import threading
 import pickle
+import time
 
 from neural_network.layers import Layer, Dense
 from neural_network import costs
@@ -81,6 +82,7 @@ class NeuralNetwork:
         print()
         print("Training ...")
         for epoch in range(epochs):
+            start_epoch = time.time()
             print(f"Epoch {epoch+1}/{epochs}")
             print("- Progress: [", end="", flush=True)
             epoch_cost = 0
@@ -89,7 +91,8 @@ class NeuralNetwork:
                     print("\u2588" * int(max(1 / bar_step, 1)), end="", flush=True)
                 self.learn(batch, learn_rate)
             accuracy, epoch_cost = self.validate(test_data, cost)
-            print(f"] Cost: {epoch_cost:.4f} | Accuracy: {accuracy:.4f}")
+            delta_time = time.time() - start_epoch  # ms
+            print(f"] Cost: {epoch_cost:.4f} | Accuracy: {accuracy:.4f}, | Time: {delta_time:.2f}s")
             if save: self.save(file)
         if save: file.close()
 

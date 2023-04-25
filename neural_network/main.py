@@ -4,14 +4,44 @@ import matplotlib.pyplot as plt
 from neural_network import activations, costs, nn as neural_network, layers
 from neural_network.data import get_mnist_data, train_test_split
 from neural_network.filters import ALL_FILTERS
+from PIL import Image
 
 
-def main():
+def recognize(img_path, nn_path = 'neural_network.pkl'):
+    with open(nn_path, 'rb') as f:
+        nn = neural_network.NeuralNetwork.load(f)
+
+    img = Image.open(img_path).convert('L')
+    img = img.resize((28, 28), Image.ANTIALIAS) 
+    img = np.array(img) 
+    img = img.reshape(28, 28)
+    prediction = nn.predict(img)
+
+    # display image and prediction
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    ax1.imshow(img.reshape(28, 28), cmap='gray')
+    ax1.axis('off')
+
+    # display probabilities as bar chart
+    classes = range(10)
+    probabilities = prediction
+    ax2.bar(classes, probabilities)
+    ax2.set_xticks(classes)
+    ax2.set_title('Probabilities')
+    ax2.set_xlabel('Class')
+    ax2.set_ylabel('Probability')
+
+    plt.show()
+
+def train():
+    input_shape = (28, 28)
+    new_input_shape = ((input_shape[0]-2)*(input_shape[1]-2)//4) * len(ALL_FILTERS)
+    
     nn = neural_network.NeuralNetwork([
         layers.Conv2D(ALL_FILTERS),
         layers.MaxPooling2D(),
         layers.Flatten(),
-        layers.Dense(13 * 13 * len(ALL_FILTERS), 128, activations.ReLU),
+        layers.Dense(new_input_shape, 128, activations.ReLU),
         layers.Dense(128, 10, activations.Softmax),
     ])
     
@@ -25,13 +55,12 @@ def main():
     train_data = np.array(list(zip(x_train, y_train)), dtype=object)
     test_data = np.array(list(zip(x_test, y_test)), dtype=object)
 
-    
-    nn.train(train_data, test_data, 0.25, cost=costs.CategoricalCrossEntropy, batch_size=32, epochs=5, save=False, file_name="neural_network.pkl")
-    
+    '''    
+    nn.train(train_data, test_data, 0.25, cost=costs.CategoricalCrossEntropy, batch_size=32, epochs=5, save=True, file_name="neural_network.pkl")
     '''
+
     with open('neural_network.pkl', 'rb') as f:
         nn = neural_network.NeuralNetwork.load(f)
-    '''
 
     fig, axes = plt.subplots(3, 3, figsize=(6, 6))
     for i in range(3):
@@ -46,6 +75,10 @@ def main():
             axes[i, j].tick_params(axis='both', which='both', length=0)
     fig.subplots_adjust(hspace=0.5)
     plt.show()
+
+def main():
+    train()
+    recognize(img_path='neural_network/num.png')
 
 if __name__ == "__main__":
     main()
