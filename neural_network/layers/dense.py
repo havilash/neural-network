@@ -35,6 +35,9 @@ class Dense(Layer):
     def calculate_outputs(self, inputs):
         self.inputs = inputs
         self.weighted_inputs = np.dot(inputs, self.weights) + self.biases
+        # check if any of the inputs are nan
+        if np.isnan(self.weighted_inputs).any():
+            print(inputs, self.weighted_inputs)
         self.activations = self.activation.func(self.weighted_inputs)
         return self.activations
 

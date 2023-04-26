@@ -51,14 +51,33 @@ def train():
     
     one_hot = lambda y: np.eye(10)[y]
 
-    # x, y = get_mnist_data(10000)
-    x, y = get_augmented_mnist_data(1)  # needs some time
+    x, y = get_mnist_data(10000)
+    # x, y = get_augmented_mnist_data(3)  # needs some time
     y = np.array([one_hot(i) for i in y])
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
-    train_data = np.array(list(zip(x_train, y_train)), dtype=object)
+    train_data = np.array(list(zip(x_train, y_train)), dtype=object)    
     test_data = np.array(list(zip(x_test, y_test)), dtype=object)
 
-    nn.train(train_data, test_data, 0.2, cost=costs.CategoricalCrossEntropy, batch_size=32, epochs=3, save=True, file_name="neural_network.pkl")
+    train_accuracies, train_costs = nn.train(
+        train_data, 
+        test_data, 
+        learn_rate=0.2, 
+        cost=costs.CategoricalCrossEntropy, 
+        batch_size=32, 
+        epochs=1, 
+        save=True, 
+        file_name="neural_network.pkl", 
+        validate_per_batch=True,
+        learn_method="threading"
+    )
+    
+    #  plot train accuracies, costs
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    ax1.plot(train_accuracies)
+    ax1.set_title('Accuracy')
+    ax1.set_ylim(0, 1)
+    ax2.plot(train_costs)
+    ax2.set_title('Cost')
 
     with open('neural_network.pkl', 'rb') as f:
         nn = neural_network.NeuralNetwork.load(f)
@@ -79,7 +98,7 @@ def train():
 
 def main():
     train()
-    gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network.pkl'))
+    # gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network.pkl'))
 
 if __name__ == "__main__":
     main()

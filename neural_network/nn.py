@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import threading
+from multiprocessing import Pool
 import pickle
 import time
 
@@ -68,11 +69,18 @@ class NeuralNetwork:
             hidden_layer.update_gradients(node_values)
 
     def learn(self, train_batch, learn_rate: float, cost: costs.Cost = constants.DEFAULT_COST):
+        for data in train_batch:
+            self.update_gradients(data[0], data[1], cost)
+        self.apply_gradients(learn_rate / len(train_batch))
+        self.reset_gradients()
+
+    def learn_threading(self, train_batch, learn_rate: float, cost: costs.Cost = constants.DEFAULT_COST):
         threads = []
         stop_event = threading.Event()
         error_message = []
         update_gradients = thread_error_handler(stop_event, error_message)(self.update_gradients)
         for data in train_batch:
+            # self.update_gradients(data[0], data[1], cost)
             thread = threading.Thread(target=update_gradients, args=(data[0], data[1], cost))
             thread.start()
             threads.append(thread)
@@ -87,7 +95,13 @@ class NeuralNetwork:
             self.apply_gradients(learn_rate / len(train_batch))
             self.reset_gradients()
 
-    def train(self, train_data, test_data, learn_rate: float, cost: costs.Cost = constants.DEFAULT_COST, batch_size: int = 32, epochs: int = 5, save: bool = False, file_name: str = "neural_network.pkl"):
+    def learn_multiprocessing(self, train_batch, learn_rate: float, cost: costs.Cost = constants.DEFAULT_COST):
+        with Pool() as pool:
+            results = pool.starmap(self.update_gradients, [(data[0], data[1], cost) for data in train_batch])
+        self.apply_gradients(learn_rate / len(train_batch))
+        self.reset_gradients()
+
+    def train(self, train_data, test_data, learn_rate: float, cost: costs.Cost = constants.DEFAULT_COST, batch_size: int = 32, epochs: int = 5, save: bool = False, file_name: str = "neural_network.pkl", validate_per_batch: bool = False, learn_method: str = 'threading'):
         """
         Update the gradients and apply them to the network based on a list of batches of training data.
 
@@ -99,11 +113,22 @@ class NeuralNetwork:
         :param epochs: The number of times to iterate over the entire training dataset.
         :param save: Whether to save the model to a file after each epoch.
         :param file_name: The name of the file to save the model to if `save` is `True`.
+        :param validate_per_batch: Whether to validate the model after each batch of training data.
+        :param learn_method: The method to use for learning. Can be 'normal', 'threading', or 'multiprocessing'.
+        :return: A tuple containing the list of accuracies and the list of costs.
         """
+        if learn_method == 'normal':
+            learn = self.learn
+        elif learn_method == 'threading':
+            learn = self.learn_threading
+        elif learn_method == 'multiprocessing':
+            learn = self.learn_multiprocessing
+        else:
+            raise ValueError(f"learn_method must be 'normal', 'threading', or 'multiprocessing'. Got {learn_method} instead.")
         
         if save: 
             file = open(file_name, 'wb')
-        accuracys, epoch_costs = [], []
+        accuracies, epoch_costs = [], []
         num_batches = math.ceil(len(train_data) / batch_size)
         bar_step = (num_batches / 50)
         print()
@@ -112,20 +137,25 @@ class NeuralNetwork:
             start_epoch = time.time()
             print(f"Epoch {epoch+1}/{epochs}")
             print("- Progress: [", end="", flush=True)
-            epoch_cost = 0
             for i, batch in enumerate(create_batches(train_data, batch_size)):
+                # progress bar
                 if i % bar_step < 1:
                     print("\u2588" * int(max(1 / bar_step, 1)), end="", flush=True)
-                self.learn(batch, learn_rate)
-            accuracy, epoch_cost = self.validate(test_data, cost)
-            accuracys.append(accuracy)
-            epoch_costs.append(epoch_costs)
+                learn(batch, learn_rate)
+                if validate_per_batch:
+                    acc, cos = self.validate(test_data, cost)
+                    accuracies.append(acc)
+                    epoch_costs.append(cos)
+            if not validate_per_batch:
+                acc, cos = self.validate(test_data, cost)
+                accuracies.append(acc)
+                epoch_costs.append(cos)
             delta_time = time.time() - start_epoch
-            print(f"] Cost: {epoch_cost:.4f} | Accuracy: {accuracy:.4f}, | Time: {delta_time:.2f}s")
+            print(f"] Cost: {cos:.4f} | Accuracy: {acc:.4f}, | Time: {delta_time:.2f}s")
             if save: self.save(file)
         if save: file.close()
 
-        return accuracys, epoch_costs
+        return accuracies, epoch_costs
 
     def save(self, file):
         pickle.dump(self, file)

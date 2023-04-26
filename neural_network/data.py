@@ -6,7 +6,7 @@ import random
 
 
 def get_mnist_data(limit=None):
-    mnist = fetch_openml('mnist_784', version=1, as_frame=False, parser='liac-arff')
+    mnist = fetch_openml('mnist_784', version=1, as_frame=False, parser='auto')
     x, y = np.array(mnist['data']), np.array(mnist['target'])
     x = (x.astype('float32') / 255).reshape((-1, 28, 28))
     y = y.astype('int32')
@@ -46,8 +46,7 @@ def train_test_split(x, y, test_size=0.2, shuffle=True):
 
 
 def create_batches(data, batch_size: int = 32):
-    for i in range(0, len(data), batch_size):
-        yield data[i:i+batch_size]
+    return np.array_split(data, len(data) // batch_size)
 
 
 if __name__ == "__main__":
