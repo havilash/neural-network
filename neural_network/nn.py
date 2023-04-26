@@ -9,6 +9,16 @@ from neural_network import costs
 from neural_network.data import create_batches
 from neural_network import constants
 
+def thread_error_handler(stop_event, error_message):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            try:
+                func(*args, **kwargs)
+            except Exception as e:
+                error_message.append(str(e))
+                stop_event.set()
+        return wrapper
+    return decorator
 
 class NeuralNetwork:
     def __init__(self, layers) -> None:
@@ -59,16 +69,23 @@ class NeuralNetwork:
 
     def learn(self, train_batch, learn_rate: float, cost: costs.Cost = constants.DEFAULT_COST):
         threads = []
+        stop_event = threading.Event()
+        error_message = []
+        update_gradients = thread_error_handler(stop_event, error_message)(self.update_gradients)
         for data in train_batch:
-            thread = threading.Thread(target=self.update_gradients, args=(data[0], data[1], cost))
+            thread = threading.Thread(target=update_gradients, args=(data[0], data[1], cost))
             thread.start()
             threads.append(thread)
         
         for thread in threads:
             thread.join()
 
-        self.apply_gradients(learn_rate / len(train_batch))
-        self.reset_gradients()
+        if stop_event.is_set():
+            print('error_message:', error_message)
+            raise Exception(error_message[0])
+        else:
+            self.apply_gradients(learn_rate / len(train_batch))
+            self.reset_gradients()
 
     def train(self, train_data, test_data, learn_rate: float, cost: costs.Cost = constants.DEFAULT_COST, batch_size: int = 32, epochs: int = 5, save: bool = False, file_name: str = "neural_network.pkl"):
         """
@@ -100,7 +117,7 @@ class NeuralNetwork:
                     print("\u2588" * int(max(1 / bar_step, 1)), end="", flush=True)
                 self.learn(batch, learn_rate)
             accuracy, epoch_cost = self.validate(test_data, cost)
-            delta_time = time.time() - start_epoch  # ms
+            delta_time = time.time() - start_epoch
             print(f"] Cost: {epoch_cost:.4f} | Accuracy: {accuracy:.4f}, | Time: {delta_time:.2f}s")
             if save: self.save(file)
         if save: file.close()

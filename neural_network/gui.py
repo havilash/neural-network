@@ -58,7 +58,7 @@ class GUI:
             self.num.append(customtkinter.CTkLabel(master = self.num_frame, text = i))
             self.num[i].grid(padx = 10, row = i, column = 0)
 
-            self.per.append(customtkinter.CTkLabel(master = self.num_frame, text = f'{self.prediction[i] * 100:.5f}%'))
+            self.per.append(customtkinter.CTkLabel(master = self.num_frame, text = f'{self.prediction[i] * 100:.0f}%'))
             self.per[i].grid(padx = 10, row = i, column = 1)
 
         # button_frame
