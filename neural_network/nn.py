@@ -103,6 +103,7 @@ class NeuralNetwork:
         
         if save: 
             file = open(file_name, 'wb')
+        accuracys, epoch_costs = [], []
         num_batches = math.ceil(len(train_data) / batch_size)
         bar_step = (num_batches / 50)
         print()
@@ -117,10 +118,14 @@ class NeuralNetwork:
                     print("\u2588" * int(max(1 / bar_step, 1)), end="", flush=True)
                 self.learn(batch, learn_rate)
             accuracy, epoch_cost = self.validate(test_data, cost)
+            accuracys.append(accuracy)
+            epoch_costs.append(epoch_costs)
             delta_time = time.time() - start_epoch
             print(f"] Cost: {epoch_cost:.4f} | Accuracy: {accuracy:.4f}, | Time: {delta_time:.2f}s")
             if save: self.save(file)
         if save: file.close()
+
+        return accuracys, epoch_costs
 
     def save(self, file):
         pickle.dump(self, file)

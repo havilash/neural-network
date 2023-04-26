@@ -14,12 +14,6 @@ class Dense(Layer):
 
         self.initialize_weights_biases()
 
-    def set_shape(self, input_shape, output_shape):
-        self.input_shape = input_shape
-        self.output_shape = output_shape
-
-        self.initialize_weights_biases()
-
     def initialize_weights_biases(self):
         self.weights = np.zeros((self.num_input, self.num_output))
         self.biases = np.zeros(self.num_output)
