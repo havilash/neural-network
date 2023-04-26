@@ -16,6 +16,5 @@ def test_cost_derivative(cost):
     output = np.random.rand(1)
     expected_output = np.random.rand(1)
     delta = 1e-5
-    print(output, expected_output)
     numerical_derivative = (cost.func(output + delta, expected_output) - cost.func(output, expected_output)) / delta
     assert np.allclose(numerical_derivative, cost.derivative(output, expected_output), rtol=1e-2)

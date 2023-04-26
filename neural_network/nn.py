@@ -14,8 +14,18 @@ class NeuralNetwork:
     def __init__(self, layers) -> None:
         self.layers: list[Layer] = np.array(layers)
 
+        for i in range(len(layers)-1):
+            if isinstance(layers[i], Dense):
+                if layers[i].num_output != layers[i+1].num_input:
+                    raise ValueError(f"Input Shape of Layer {i+1} doesn't match the input Shape of Layer {i+2}")
+
     def __repr__(self):
         return f"NeuralNetwork(\n layers={self.layers}\n)"
+    
+    def sequential(self, layers: list[Layer | Dense]):
+        self.layers = []
+        for i in range(1, len(layers)):
+            layers[i].set_shape(layers[i-1].output_shape, layers[i].output_shape)
 
     def predict(self, inputs):
         for layer in self.layers:
@@ -25,7 +35,6 @@ class NeuralNetwork:
     def cost(self, inputs, expected_outputs, node_cost: costs.Cost = constants.DEFAULT_COST):
         outputs = self.predict(inputs) 
         cost = np.sum(node_cost.func(outputs, expected_outputs))
-        print(node_cost.func(outputs, expected_outputs))
         return cost
 
     def reset_gradients(self):
@@ -101,7 +110,11 @@ class NeuralNetwork:
 
     @staticmethod
     def load(file):
-        obj = pickle.load(file)
+        try:
+            obj = pickle.load(file)
+        except EOFError:
+            raise RuntimeError("Failed to load object from file: file is either empty or corrupted")
+            
         if isinstance(obj, NeuralNetwork):
             return obj
         else:

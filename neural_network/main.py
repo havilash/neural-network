@@ -12,15 +12,12 @@ def recognize(image: Image, nn_path = 'neural_network.pkl'):
         nn = neural_network.NeuralNetwork.load(f)
 
     img = image.convert('L')
+    img = ImageOps.invert(img)
     img = img.resize((28, 28), Image.LANCZOS) 
-    img = np.array(img) 
+    img = np.array(img)  / 255
     img = img.reshape(28, 28)
-    print(img)
     prediction = nn.predict(img)
-    print(prediction)
-    return prediction
 
-    '''
     # display image and prediction
     fig, (ax1, ax2) = plt.subplots(1, 2)
     ax1.imshow(img.reshape(28, 28), cmap='gray')
@@ -36,15 +33,17 @@ def recognize(image: Image, nn_path = 'neural_network.pkl'):
     ax2.set_ylabel('Probability')
 
     plt.show()
-    '''
+    return prediction
+    
 
 def train():
     input_shape = (28, 28)
-    new_input_shape = ((input_shape[0]-2)*(input_shape[1]-2)//4) * len(ALL_FILTERS)
+    new_input_shape = ((input_shape[0]-2)*(input_shape[1]-2)) * len(ALL_FILTERS)
+    # new_input_shape = input_shape[0] * input_shape[1]
     
     nn = neural_network.NeuralNetwork([
         layers.Conv2D(ALL_FILTERS),
-        layers.MaxPooling2D(),
+        # layers.MaxPooling2D(),
         layers.Flatten(),
         layers.Dense(new_input_shape, 128, activations.ReLU),
         layers.Dense(128, 10, activations.Softmax),
@@ -59,7 +58,7 @@ def train():
     train_data = np.array(list(zip(x_train, y_train)), dtype=object)
     test_data = np.array(list(zip(x_test, y_test)), dtype=object)
 
-    nn.train(train_data, test_data, 0.2, cost=costs.CategoricalCrossEntropy, batch_size=32, epochs=5, save=False, file_name="neural_network.pkl")
+    nn.train(train_data, test_data, 0.2, cost=costs.CategoricalCrossEntropy, batch_size=32, epochs=3, save=True, file_name="neural_network.pkl")
 
     with open('neural_network.pkl', 'rb') as f:
         nn = neural_network.NeuralNetwork.load(f)
@@ -79,6 +78,7 @@ def train():
     plt.show()
 
 def main():
+    # train()
     gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network.pkl'))
 
 if __name__ == "__main__":

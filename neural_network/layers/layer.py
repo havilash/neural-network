@@ -6,7 +6,7 @@ from neural_network import constants
 
 class Layer:
     def __init__(self) -> None:
-        self.asdf = [1, 2, 3, 4, 5]
+        pass
 
     def __repr__(self):
         name = self.__class__.__name__

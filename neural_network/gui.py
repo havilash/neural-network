@@ -19,8 +19,7 @@ class GUI:
         self.root.geometry(f'{self.width}x{self.height}')
         self.root.resizable(False, False)
         self.root.title("PyCore")
-        self.root.iconbitmap('logo.ico')
-
+        self.root.iconbitmap('neural_network/logo.ico')
 
         self.num = []
         self.per = []
@@ -59,7 +58,7 @@ class GUI:
             self.num.append(customtkinter.CTkLabel(master = self.num_frame, text = i))
             self.num[i].grid(padx = 10, row = i, column = 0)
 
-            self.per.append(customtkinter.CTkLabel(master = self.num_frame, text = f'{self.prediction[i] * 100:.0f}%'))
+            self.per.append(customtkinter.CTkLabel(master = self.num_frame, text = f'{self.prediction[i] * 100:.5f}%'))
             self.per[i].grid(padx = 10, row = i, column = 1)
 
         # button_frame
@@ -78,7 +77,7 @@ class GUI:
         self.root.mainloop()
 
     def recognize(self):
-        self.prediction = self.recognize_digit(ImageOps.invert(self.image))
+        self.prediction = self.recognize_digit(self.image)
         self.update()
 
         self.open()
@@ -98,11 +97,18 @@ class GUI:
         if self.px is None or self.py is None:
             self.px, self.py = event.x, event.y
         x, y = event.x, event.y
-        w = 10
-        corners = [(x - w, y - w), (x + w, y - w), (x + w, y + w), (x - w, y + w)]
-        self.cv.create_polygon(corners, fill='black')
-        self.draw.polygon(corners, fill='black')
+        w = 25
+        rect = x-w/2, y-w/2, x+w/2, y+w/2
+        self.cv.create_rectangle(*rect, fill='black')
+        self.draw.rectangle(rect, fill='black')
         self.px, self.py = event.x, event.y
+
+    # def paint(self, event):
+    #     if self.px is None or self.py is None: 
+    #         self.px, self.py = event.x, event.y
+    #     self.cv.create_line(event.x, event.y, self.px, self.py, fill='black', width=15)
+    #     self.draw.line((event.x, event.y, self.px, self.py), fill='black')
+    #     self.px, self.py = event.x, event.y
 
     def expand_window(self):
         if self.width < 672:
