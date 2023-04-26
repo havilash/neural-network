@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
 from neural_network import activations, costs, nn as neural_network, layers, gui
 from neural_network.data import get_mnist_data, get_augmented_mnist_data, train_test_split
@@ -64,11 +65,11 @@ def train():
         learn_rate=0.2, 
         cost=costs.CategoricalCrossEntropy, 
         batch_size=32, 
-        epochs=1, 
+        epochs=3, 
         save=True, 
         file_name="neural_network.pkl", 
-        validate_per_batch=True,
-        learn_method="threading"
+        validate_per_batch=False,
+        learn_method="threading",
     )
     
     #  plot train accuracies, costs

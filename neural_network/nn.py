@@ -101,7 +101,19 @@ class NeuralNetwork:
         self.apply_gradients(learn_rate / len(train_batch))
         self.reset_gradients()
 
-    def train(self, train_data, test_data, learn_rate: float, cost: costs.Cost = constants.DEFAULT_COST, batch_size: int = 32, epochs: int = 5, save: bool = False, file_name: str = "neural_network.pkl", validate_per_batch: bool = False, learn_method: str = 'threading'):
+    def train(
+            self, 
+            train_data, 
+            test_data, 
+            learn_rate: float, 
+            cost: costs.Cost = constants.DEFAULT_COST, 
+            batch_size: int = 32, 
+            epochs: int = 5, 
+            save: bool = False, 
+            file_name: str = "neural_network.pkl", 
+            validate_per_batch: bool = False, 
+            learn_method: str = 'threading', 
+        ):
         """
         Update the gradients and apply them to the network based on a list of batches of training data.
 
@@ -117,6 +129,8 @@ class NeuralNetwork:
         :param learn_method: The method to use for learning. Can be 'normal', 'threading', or 'multiprocessing'.
         :return: A tuple containing the list of accuracies and the list of costs.
         """
+
+        # Set learn function
         if learn_method == 'normal':
             learn = self.learn
         elif learn_method == 'threading':
@@ -124,36 +138,57 @@ class NeuralNetwork:
         elif learn_method == 'multiprocessing':
             learn = self.learn_multiprocessing
         else:
-            raise ValueError(f"learn_method must be 'normal', 'threading', or 'multiprocessing'. Got {learn_method} instead.")
-        
-        if save: 
+            raise ValueError(f"Invalid learn_method: {learn_method}")
+
+        # Open file
+        if save:
             file = open(file_name, 'wb')
+
+        # Initialize accuracies, costs
         accuracies, epoch_costs = [], []
+
+        # number of batches, step size progress bar
         num_batches = math.ceil(len(train_data) / batch_size)
         bar_step = (num_batches / 50)
+
         print()
         print("Training ...")
         for epoch in range(epochs):
             start_epoch = time.time()
             print(f"Epoch {epoch+1}/{epochs}")
             print("- Progress: [", end="", flush=True)
+
+            # Loop over batches
             for i, batch in enumerate(create_batches(train_data, batch_size)):
-                # progress bar
+                # Update progress bar
                 if i % bar_step < 1:
                     print("\u2588" * int(max(1 / bar_step, 1)), end="", flush=True)
+
+                # Update gradients using learn function
                 learn(batch, learn_rate)
+
+                # Validate after each batch
                 if validate_per_batch:
                     acc, cos = self.validate(test_data, cost)
                     accuracies.append(acc)
                     epoch_costs.append(cos)
+
+            # Validate after each epoch
             if not validate_per_batch:
                 acc, cos = self.validate(test_data, cost)
                 accuracies.append(acc)
                 epoch_costs.append(cos)
+
             delta_time = time.time() - start_epoch
             print(f"] Cost: {cos:.4f} | Accuracy: {acc:.4f}, | Time: {delta_time:.2f}s")
-            if save: self.save(file)
-        if save: file.close()
+
+            # Save model
+            if save:
+                self.save(file)
+
+        # Close file if save is True
+        if save:
+            file.close()
 
         return accuracies, epoch_costs
 
