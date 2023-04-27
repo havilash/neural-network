@@ -38,14 +38,20 @@ def recognize(image: Image, nn_path = constants.DEFAULT_NN_PATH):
     
 
 def train():
+    input_shape = (28, 28)
+    new_input_shape = ((input_shape[0]-2)*(input_shape[1]-2)) * len(ALL_FILTERS)
+    # new_input_shape = input_shape[0] * input_shape[1]
+    
     nn = neural_network.NeuralNetwork([
         layers.Conv2D(ALL_FILTERS),
-        # layers.MaxPooling2D(),
+        layers.MaxPooling2D(),
         layers.Flatten(),
-        layers.Dense(26 * 26 * 6, 128, activations.ReLU),
+        layers.Dense(13 * 13 * 6, 128, activations.ReLU),
         layers.Dense(128, 10, activations.Softmax),
     ])
 
+    nn = neural_network.load
+    
     one_hot = lambda y: np.eye(10)[y]
 
     # x, y = get_mnist_data(10000)
@@ -65,7 +71,7 @@ def train():
         save=True, 
         file_name="neural_network/neural_network.pkl",
         validate_per_batch=False,
-        validate_interval=100,
+        validate_interval=25,
         learn_method="threading",
     )
     
@@ -77,7 +83,7 @@ def train():
     ax2.plot(train_costs)
     ax2.set_title('Cost')
 
-    with open('neural_network/neural_network.pkl', 'rb') as f:
+    with open('neural_network/neural_network_final_with_softmax.pkl', 'rb') as f:
         nn = neural_network.NeuralNetwork.load(f)
 
 
@@ -96,8 +102,8 @@ def train():
     plt.show()
 
 def main():
-    # train()
-    gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network/neural_network_final_with_softmax.pkl'))
+    train()
+    gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network/neural_network.pkl'))
 
 if __name__ == "__main__":
     main()
