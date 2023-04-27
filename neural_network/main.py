@@ -99,7 +99,7 @@ def train():
 
 def main():
     train()
-    # gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network.pkl'))
+    gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network.pkl'))
 
 if __name__ == "__main__":
     main()

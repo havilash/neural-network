@@ -10,6 +10,7 @@ from neural_network import costs
 from neural_network.data import create_batches
 from neural_network import constants
 
+
 def thread_error_handler(stop_event, error_message):
     def decorator(func):
         def wrapper(*args, **kwargs):
@@ -18,33 +19,36 @@ def thread_error_handler(stop_event, error_message):
             except Exception as e:
                 error_message.append(str(e))
                 stop_event.set()
+
         return wrapper
+
     return decorator
+
 
 class NeuralNetwork:
     def __init__(self, layers) -> None:
         self.layers: list[Layer] = np.array(layers)
 
-        for i in range(len(layers)-1):
+        for i in range(len(layers) - 1):
             if isinstance(layers[i], Dense):
-                if layers[i].num_output != layers[i+1].num_input:
-                    raise ValueError(f"Input Shape of Layer {i+1} doesn't match the input Shape of Layer {i+2}")
+                if layers[i].num_output != layers[i + 1].num_input:
+                    raise ValueError(f"Input Shape of Layer {i + 1} doesn't match the input Shape of Layer {i + 2}")
 
     def __repr__(self):
         return f"NeuralNetwork(\n layers={self.layers}\n)"
-    
+
     def sequential(self, layers: list[Layer | Dense]):
         self.layers = []
         for i in range(1, len(layers)):
-            layers[i].set_shape(layers[i-1].output_shape, layers[i].output_shape)
+            layers[i].set_shape(layers[i - 1].output_shape, layers[i].output_shape)
 
     def predict(self, inputs):
         for layer in self.layers:
             inputs = layer.calculate_outputs(inputs)
         return inputs
-    
+
     def cost(self, inputs, expected_outputs, node_cost: costs.Cost = constants.DEFAULT_COST):
-        outputs = self.predict(inputs) 
+        outputs = self.predict(inputs)
         cost = np.sum(node_cost.func(outputs, expected_outputs))
         return cost
 
@@ -84,7 +88,7 @@ class NeuralNetwork:
             thread = threading.Thread(target=update_gradients, args=(data[0], data[1], cost))
             thread.start()
             threads.append(thread)
-        
+
         for thread in threads:
             thread.join()
 
@@ -102,18 +106,18 @@ class NeuralNetwork:
         self.reset_gradients()
 
     def train(
-            self, 
-            train_data, 
-            test_data, 
-            learn_rate: float, 
-            cost: costs.Cost = constants.DEFAULT_COST, 
-            batch_size: int = 32, 
-            epochs: int = 5, 
-            save: bool = False, 
-            file_name: str = "neural_network.pkl", 
-            validate_per_batch: bool = False, 
-            learn_method: str = 'threading', 
-        ):
+            self,
+            train_data,
+            test_data,
+            learn_rate: float,
+            cost: costs.Cost = constants.DEFAULT_COST,
+            batch_size: int = 32,
+            epochs: int = 5,
+            save: bool = False,
+            file_name: str = "neural_network.pkl",
+            validate_per_batch: bool = False,
+            learn_method: str = 'threading',
+    ):
         """
         Update the gradients and apply them to the network based on a list of batches of training data.
 
@@ -155,7 +159,7 @@ class NeuralNetwork:
         print("Training ...")
         for epoch in range(epochs):
             start_epoch = time.time()
-            print(f"Epoch {epoch+1}/{epochs}")
+            print(f"Epoch {epoch + 1}/{epochs}")
             print("- Progress: [", end="", flush=True)
 
             # Loop over batches
@@ -168,7 +172,7 @@ class NeuralNetwork:
                 learn(batch, learn_rate)
 
                 # Validate after each batch
-                if validate_per_batch:
+                if validate_per_batch and i % 5 == 0:
                     acc, cos = self.validate(test_data, cost)
                     accuracies.append(acc)
                     epoch_costs.append(cos)
@@ -201,7 +205,7 @@ class NeuralNetwork:
             obj = pickle.load(file)
         except EOFError:
             raise RuntimeError("Failed to load object from file: file is either empty or corrupted")
-            
+
         if isinstance(obj, NeuralNetwork):
             return obj
         else:
