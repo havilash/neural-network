@@ -40,7 +40,7 @@ def recognize(image: Image, nn_path = 'neural_network.pkl'):
 def train():
     input_shape = (28, 28)
     new_input_shape = ((input_shape[0]-2)*(input_shape[1]-2)) * len(ALL_FILTERS)
-    # new_input_shape = input_shape[0] * input_shape[1]
+    new_input_shape = input_shape[0] * input_shape[1]
     
     nn = neural_network.NeuralNetwork([
         layers.Conv2D(ALL_FILTERS),
@@ -50,7 +50,8 @@ def train():
         layers.Dense(128, 10, activations.Softmax),
     ])
 
-    nn = neural_network.load
+    with open('neural_network_final_with_softmax.pkl', 'rb') as f:
+        nn = neural_network.NeuralNetwork.load(f)
     
     one_hot = lambda y: np.eye(10)[y]
 
@@ -67,7 +68,7 @@ def train():
         learn_rate=0.2, 
         cost=costs.CategoricalCrossEntropy, 
         batch_size=32, 
-        epochs=3, 
+        epochs=5,
         save=True, 
         file_name="neural_network_final_with_softmax.pkl",
         validate_per_batch=False,
@@ -82,8 +83,8 @@ def train():
     ax2.plot(train_costs)
     ax2.set_title('Cost')
 
-    with open('neural_network_final_with_softmax.pkl', 'rb') as f:
-        nn = neural_network.NeuralNetwork.load(f)
+    # with open('neural_network_final_with_softmax.pkl', 'rb') as f:
+    #     nn = neural_network.NeuralNetwork.load(f)
 
     fig, axes = plt.subplots(3, 3, figsize=(6, 6))
     for i in range(3):
@@ -100,8 +101,7 @@ def train():
     plt.show()
 
 def main():
-    train()
-    gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network.pkl'))
+    gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network_final_with_softmax.pkl'))
 
 if __name__ == "__main__":
     main()
