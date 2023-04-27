@@ -53,9 +53,21 @@ class Dense(Layer):
         self.gradient_weights = np.zeros((self.num_input, self.num_output))
         self.gradient_biases = np.zeros(self.num_output)
 
-    def update_gradients(self, node_values):
-        self.gradient_weights += np.outer(self.inputs, node_values)  # derivative cost with respect to weights
-        self.gradient_biases += node_values  # derivative cost with respect to biases
+    def update_gradients(self, node_values, max_norm=1.0):
+        gradient_weights = np.outer(self.inputs, node_values)  # derivative cost with respect to weights
+        gradient_biases = node_values  # derivative cost with respect to biases
+            
+        # Calculate the norm of the gradients
+        norm = np.linalg.norm(gradient_weights) + np.linalg.norm(gradient_biases)
+
+        # Scale the gradients if their norm exceeds the threshold
+        if norm > max_norm:
+            scale = max_norm / norm
+            gradient_weights *= scale
+            gradient_biases *= scale
+
+        self.gradient_weights += gradient_weights
+        self.gradient_biases += gradient_biases
 
     # Backpropagation
     def calculate_output_layer_node_values(self, expected_outputs, cost: costs.Cost):
