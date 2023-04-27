@@ -116,11 +116,13 @@ class NeuralNetwork:
             save: bool = False,
             file_name: str = "neural_network.pkl",
             validate_per_batch: bool = False,
+            validate_interval: int = 1,
             learn_method: str = 'threading',
     ):
         """
         Update the gradients and apply them to the network based on a list of batches of training data.
 
+        :param validate_interval: how many batches to skip until checking the cost and accuracy again
         :param train_data: A list of batches of training data. Each batch is a list of tuples containing input and target output data. Each tuple represents a single training example with the first element being the input data (features) and the second element being the target output data (label). For example: [[(x1, y1), (x2, y2)], [(x3, y3), (x4, y4)]] where x1, x2, x3, x4 are the input data and y1, y2, y3, y4 are the target output data.
         :param test_data: A list of tuples containing input and target output data for testing the accuracy of the model.
         :param learn_rate: The learning rate to use when applying the gradients.
@@ -172,7 +174,7 @@ class NeuralNetwork:
                 learn(batch, learn_rate)
 
                 # Validate after each batch
-                if validate_per_batch and i % 5 == 0:
+                if validate_per_batch and i % validate_interval == 0:
                     acc, cos = self.validate(test_data, cost)
                     accuracies.append(acc)
                     epoch_costs.append(cos)
