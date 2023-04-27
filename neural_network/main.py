@@ -61,7 +61,7 @@ def train():
         learn_rate=0.2, 
         cost=costs.CategoricalCrossEntropy, 
         batch_size=64,
-        epochs=3, 
+        epochs=3,
         save=True, 
         file_name="neural_network/neural_network.pkl",
         validate_per_batch=False,
@@ -79,6 +79,7 @@ def train():
 
     with open('neural_network/neural_network.pkl', 'rb') as f:
         nn = neural_network.NeuralNetwork.load(f)
+
 
     fig, axes = plt.subplots(3, 3, figsize=(6, 6))
     for i in range(3):
