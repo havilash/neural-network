@@ -37,14 +37,10 @@ def recognize(image: Image, nn_path = constants.DEFAULT_NN_PATH):
     return prediction
     
 
-def train():
-    input_shape = (28, 28)
-    new_input_shape = ((input_shape[0]-2)*(input_shape[1]-2)) * len(ALL_FILTERS)
-    # new_input_shape = input_shape[0] * input_shape[1]
-    
+def train():    
     nn = neural_network.NeuralNetwork([
         layers.Conv2D(ALL_FILTERS),
-        layers.MaxPooling2D(),
+        # layers.MaxPooling2D(),
         layers.Flatten(),
         layers.Dense(13 * 13 * 6, 128, activations.ReLU),
         layers.Dense(128, 10, activations.Softmax),
@@ -71,7 +67,7 @@ def train():
         save=True, 
         file_name="neural_network/neural_network.pkl",
         validate_per_batch=False,
-        validate_interval=25,
+        validate_interval=100,
         learn_method="threading",
     )
     
@@ -102,8 +98,8 @@ def train():
     plt.show()
 
 def main():
-    train()
-    gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network/neural_network.pkl'))
+    # train()
+    gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network/neural_network_final_with_softmax.pkl'))
 
 if __name__ == "__main__":
     main()

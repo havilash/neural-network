@@ -19,7 +19,7 @@ class GUI:
         self.root.geometry(f'{self.width}x{self.height}')
         self.root.resizable(False, False)
         self.root.title("PyCore")
-        self.root.iconbitmap('logo.ico')
+        self.root.iconbitmap('neural_network/logo.ico')
 
         self.num = []
         self.per = []
