@@ -2,13 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-from neural_network import activations, costs, nn as neural_network, layers, gui
+from neural_network import activations, costs, nn as neural_network, layers, gui, constants
 from neural_network.data import get_mnist_data, get_augmented_mnist_data, train_test_split
 from neural_network.filters import ALL_FILTERS
 from PIL import Image, ImageOps
 
 
-def recognize(image: Image, nn_path = 'neural_network.pkl'):
+def recognize(image: Image, nn_path = constants.DEFAULT_NN_PATH):
     with open(nn_path, 'rb') as f:
         nn = neural_network.NeuralNetwork.load(f)
 
@@ -44,16 +44,18 @@ def train():
     
     nn = neural_network.NeuralNetwork([
         layers.Conv2D(ALL_FILTERS),
-        # layers.MaxPooling2D(),
+        layers.MaxPooling2D(),
         layers.Flatten(),
-        layers.Dense(new_input_shape, 128, activations.ReLU),
+        layers.Dense(13 * 13 * 6, 128, activations.ReLU),
         layers.Dense(128, 10, activations.Softmax),
     ])
+
+    nn = neural_network.load
     
     one_hot = lambda y: np.eye(10)[y]
 
-    x, y = get_mnist_data(10000)
-    # x, y = get_augmented_mnist_data(3)  # needs some time
+    # x, y = get_mnist_data(10000)
+    x, y = get_augmented_mnist_data(10)  # needs some time
     y = np.array([one_hot(i) for i in y])
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
     train_data = np.array(list(zip(x_train, y_train)), dtype=object)    
@@ -67,8 +69,8 @@ def train():
         batch_size=32, 
         epochs=3, 
         save=True, 
-        file_name="neural_network.pkl", 
-        validate_per_batch=True,
+        file_name="neural_network/neural_network.pkl",
+        validate_per_batch=False,
         validate_interval=25,
         learn_method="threading",
     )
@@ -81,7 +83,7 @@ def train():
     ax2.plot(train_costs)
     ax2.set_title('Cost')
 
-    with open('neural_network.pkl', 'rb') as f:
+    with open('neural_network/neural_network_final_with_softmax.pkl', 'rb') as f:
         nn = neural_network.NeuralNetwork.load(f)
 
     fig, axes = plt.subplots(3, 3, figsize=(6, 6))
@@ -100,7 +102,7 @@ def train():
 
 def main():
     train()
-    gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network.pkl'))
+    gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network/neural_network.pkl'))
 
 if __name__ == "__main__":
     main()

@@ -114,7 +114,7 @@ class NeuralNetwork:
             batch_size: int = 32,
             epochs: int = 5,
             save: bool = False,
-            file_name: str = "neural_network.pkl",
+            file_name: str = constants.DEFAULT_NN_PATH,
             validate_per_batch: bool = False,
             validate_interval: int = 1,
             learn_method: str = 'threading',
