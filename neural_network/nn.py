@@ -114,7 +114,7 @@ class NeuralNetwork:
             batch_size: int = 32,
             epochs: int = 5,
             save: bool = False,
-            file_name: str = "neural_network.pkl",
+            file_name: str = constants.DEFAULT_NN_PATH,
             validate_per_batch: bool = False,
             validate_interval: int = 1,
             learn_method: str = 'threading',
@@ -131,7 +131,8 @@ class NeuralNetwork:
         :param epochs: The number of times to iterate over the entire training dataset.
         :param save: Whether to save the model to a file after each epoch.
         :param file_name: The name of the file to save the model to if `save` is `True`.
-        :param validate_per_batch: Whether to validate the model after each batch of training data.
+        :param validate_per_batch: The number of batches or epochs to skip before validating the model again.
+        :param validate_interval: The number of batches/epochs to skip before validating the model. 
         :param learn_method: The method to use for learning. Can be 'normal', 'threading', or 'multiprocessing'.
         :return: A tuple containing the list of accuracies and the list of costs.
         """
@@ -180,11 +181,12 @@ class NeuralNetwork:
                     epoch_costs.append(cos)
 
             # Validate after each epoch
-            if not validate_per_batch:
+            if not validate_per_batch and i % validate_interval == 0:
                 acc, cos = self.validate(test_data, cost)
                 accuracies.append(acc)
                 epoch_costs.append(cos)
 
+            acc, cos = self.validate(test_data, cost)
             delta_time = time.time() - start_epoch
             print(f"] Cost: {cos:.4f} | Accuracy: {acc:.4f}, | Time: {delta_time:.2f}s")
 
