@@ -20,7 +20,7 @@ def get_augmented_mnist_data(n, limit=None):
     x = x.reshape(-1, 28, 28)
     augmented_x = []
     transform = alb.Compose([
-        alb.ShiftScaleRotate(shift_limit=0.08, scale_limit=0.15, rotate_limit=12),
+        alb.ShiftScaleRotate(shift_limit=0.2, scale_limit=0.18, rotate_limit=20),
         alb.RandomBrightnessContrast(brightness_limit=0.2, contrast_limit=0.2),
         alb.GridDistortion(),
         alb.OpticalDistortion(distort_limit=0.03, shift_limit=0.03)
