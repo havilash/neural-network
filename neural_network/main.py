@@ -98,7 +98,11 @@ def train():
     plt.show()
 
 def main():
+<<<<<<< HEAD
     # train()
+=======
+    train()
+>>>>>>> 6a67e0b (added the jupyter docs)
     gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network.pkl'))
 
 if __name__ == "__main__":
