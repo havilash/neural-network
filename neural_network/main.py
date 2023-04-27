@@ -52,8 +52,8 @@ def train():
     
     one_hot = lambda y: np.eye(10)[y]
 
-    # x, y = get_mnist_data(10000)
-    x, y = get_augmented_mnist_data(3)  # needs some time
+    x, y = get_mnist_data(10000)
+    # x, y = get_augmented_mnist_data(3)  # needs some time
     y = np.array([one_hot(i) for i in y])
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
     train_data = np.array(list(zip(x_train, y_train)), dtype=object)    
@@ -68,7 +68,8 @@ def train():
         epochs=3, 
         save=True, 
         file_name="neural_network.pkl", 
-        validate_per_batch=False,
+        validate_per_batch=True,
+        validate_interval=25,
         learn_method="threading",
     )
     
