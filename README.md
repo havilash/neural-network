@@ -1,6 +1,16 @@
-# Neural Network
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/Havilash/Neural-Network/edit/main/README.md">
+    <img src="logo.png" alt="Logo" width="80" height="80">
+  </a>
 
-Classification Neural Network
+  <h3 align="center">PyCore</h3>
+
+  <p align="center">
+    Classification Neural Network
+  </p>
+</div>
 
 ## Description
 
