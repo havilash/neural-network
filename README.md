@@ -53,7 +53,7 @@ from neural_network.filters import ALL_FILTERS
 ## Authors
  
 * [@Havilash](https://github.com/Havilash)
-* [@Greg](https://github.com/rergr)
+* [@Gregory](https://github.com/rergr)
 * [@Nicolas](https://github.com/Nic01asCT)
 * [@Ensar](https://github.com/Ensar05)
 
