@@ -42,15 +42,13 @@ def train():
         layers.Conv2D(ALL_FILTERS),
         # layers.MaxPooling2D(),
         layers.Flatten(),
-        layers.Dense(13 * 13 * 6, 128, activations.ReLU),
+        layers.Dense(26*26 * len(ALL_FILTERS), 128, activations.ReLU),
         layers.Dense(128, 10, activations.Softmax),
     ])
 
-    nn = neural_network.load
-    
     one_hot = lambda y: np.eye(10)[y]
 
-    # x, y = get_mnist_data(10000)
+    # x, y = get_mnist_data(2000)
     x, y = get_augmented_mnist_data(10)  # needs some time
     y = np.array([one_hot(i) for i in y])
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
@@ -79,7 +77,7 @@ def train():
     ax2.plot(train_costs)
     ax2.set_title('Cost')
 
-    with open('neural_network/neural_network_final_with_softmax.pkl', 'rb') as f:
+    with open('neural_network/neural_network.pkl', 'rb') as f:
         nn = neural_network.NeuralNetwork.load(f)
 
 
@@ -100,6 +98,7 @@ def train():
 def main():
     # train()
     gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network/neural_network_final_with_softmax.pkl'))
+    # gui.GUI(recognize=lambda x: recognize(x, nn_path='neural_network/neural_network_final_more_augmentation.pkl'))
 
 if __name__ == "__main__":
     main()
