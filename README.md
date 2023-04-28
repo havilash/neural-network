@@ -20,13 +20,15 @@ This project is a versatile neural network package specifically designed for cla
 
 ### Dependencies
 
-* python 3.7 or higher
 * numpy
 * matplotlib
-* keras
-* tensorflow
+* albumentations
 * scikit-learn
 * jupyter
+* scipy
+* scikit-image
+* pillow
+* customtkinter
 
 ### Installing
 
@@ -42,7 +44,9 @@ or
 
 * Import package
 ```python
-import neural_network
+from neural_network import activations, costs, nn as neural_network, layers, gui, constants
+from neural_network.data import get_mnist_data, get_augmented_mnist_data, train_test_split
+from neural_network.filters import ALL_FILTERS
 ```
 * Run example project `python ./neural_network/main.py` or `python -m neural_network.main`
 
@@ -50,7 +54,7 @@ import neural_network
  
 * [@Havilash](https://github.com/Havilash)
 * [@Greg](https://github.com/rergr)
-* [@Nicolas](https://github.com/)
+* [@Nicolas](https://github.com/Nic01asCT)
 * [@Ensar](https://github.com/Ensar05)
 
 ## License
