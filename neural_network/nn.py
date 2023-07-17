@@ -126,7 +126,7 @@ class NeuralNetwork:
         :param epochs: The number of times to iterate over the entire training dataset.
         :param save: Whether to save the model to a file after each epoch.
         :param file_name: The name of the file to save the model to if `save` is `True`.
-        :param validate_per_batch: The number of batches or epochs to skip before validating the model again.
+        :param validate_per_batch: Indicates whether to validate the model after each batch (`True`) or after each epoch (`False`).
         :param validate_interval: The number of batches/epochs to skip before validating the model. 
         :param learn_method: The method to use for learning. Can be 'normal', 'threading', or 'multiprocessing'.
         :return: A tuple containing the list of accuracies and the list of costs.
