@@ -37,11 +37,6 @@ class NeuralNetwork:
     def __repr__(self):
         return f"NeuralNetwork(\n layers={self.layers}\n)"
 
-    def sequential(self, layers: list[Layer | Dense]):
-        self.layers = []
-        for i in range(1, len(layers)):
-            layers[i].set_shape(layers[i - 1].output_shape, layers[i].output_shape)
-
     def predict(self, inputs):
         for layer in self.layers:
             inputs = layer.calculate_outputs(inputs)
